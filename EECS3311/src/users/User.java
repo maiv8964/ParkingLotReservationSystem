@@ -1,6 +1,7 @@
 package users;
 
 import reservations.Reservation;
+import Payment.*;
 
 public abstract class User{
 	private PaymentInfo payment_info;
@@ -30,6 +31,18 @@ public abstract class User{
 	}
 	
 	public abstract int getParkingRate();
+	public String getEmail() {
+		return this.username;
+	}
+	public String getPassword() {
+		return this.password;
+	}
+	
+	
+	public void setValid() {
+		this.isValidated = true;
+		
+	}
 	
 	
 }

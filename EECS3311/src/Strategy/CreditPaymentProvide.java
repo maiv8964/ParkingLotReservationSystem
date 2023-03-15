@@ -5,7 +5,7 @@ import Payment.PaymentInfo;
 public class CreditPaymentProvide extends PaymentProvider {
 
 	@Override
-	public boolean handlePayment(double amount, PaymentInfo payment) {
+	public boolean handlePayment(PaymentInfo payment, double amount) {
 		// TODO Auto-generated method stub
 		// perform payment processing using the "Credit" payment method
         System.out.println("Processing payment using Credit Type payment method...");

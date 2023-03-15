@@ -5,7 +5,7 @@ import Payment.PaymentInfo;
 public class MobilePaymentProvider extends PaymentProvider {
 
 	@Override
-	public boolean handlePayment(double amount, PaymentInfo payment) {
+	public boolean handlePayment(PaymentInfo payment, double amount) {
 		// TODO Auto-generated method stub
 		// perform payment processing using the "Mobile" payment method
         System.out.println("Processing payment using Mobile Type payment method...");

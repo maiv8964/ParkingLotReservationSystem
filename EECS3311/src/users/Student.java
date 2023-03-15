@@ -9,7 +9,7 @@ public class Student extends User {
 	//need to decide the rates for each user
 	@Override
 	public int getParkingRate() {
-		return 0;
+		return 5;
 	}
 
 }

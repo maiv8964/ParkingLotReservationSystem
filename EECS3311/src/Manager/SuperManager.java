@@ -2,7 +2,8 @@ package Manager;
 
 import java.util.UUID;
 
-import Others.*;
+
+import parking.ParkingSystem;
 
 public class SuperManager extends Manager {
     private static SuperManager instance;
@@ -23,7 +24,7 @@ public class SuperManager extends Manager {
     	String username = "manager_" + String.valueOf(System.nanoTime());
     	String password = "password_" + String.valueOf(System.nanoTime());
         Manager newManager = new Manager(username, password);
-        Parking_System.getInstance().addManager(newManager);
+        //ParkingSystem.getInstance().addManager(newManager);
         return newManager;
     }
 }

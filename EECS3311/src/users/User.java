@@ -8,6 +8,7 @@ public abstract class User{
 	public String last_name;
 	private boolean isValidated;
 	//public Reservation currentReservation;
+	public Object currentReservation;
 	
 	public User(String username, String password) {
 		this.username=username;

@@ -448,7 +448,7 @@ public class main implements ActionListener {
 					success.setForeground(new Color(0, 153, 0));
 					System.out.println("Successful Login");
 
-
+					mainPanel0.setVisible(false);
 					loginPanel.setVisible(false);
 					mainPanel2.setVisible(true);
 					

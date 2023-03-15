@@ -22,6 +22,7 @@ public class main implements ActionListener {
 	private static JButton register;
 	
 	// Register Page
+	private static JButton regBack;
 	private static JPanel mainPanel1;
 	private static JPanel registerPanel;
 	private static JPanel typesPanel;

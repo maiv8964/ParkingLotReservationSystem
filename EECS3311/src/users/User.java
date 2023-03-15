@@ -1,5 +1,7 @@
 package users;
 
+import reservations.Reservation;
+
 public abstract class User{
 	private PaymentInfo payment_info;
 	private String username;
@@ -8,6 +10,7 @@ public abstract class User{
 	public String last_name;
 	private boolean isValidated;
 	//public Reservation currentReservation;
+	public Reservation currentReservation;
 	
 	public User(String username, String password) {
 		this.username=username;

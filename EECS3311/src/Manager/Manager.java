@@ -2,7 +2,7 @@ package Manager;
 
 import java.util.Random;
 
-import Others.*;
+import users.*;
 
 public class Manager {
 	

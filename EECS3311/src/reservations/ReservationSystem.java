@@ -5,8 +5,9 @@ import java.util.Map;
 import parking.ParkingLot;
 import parking.ParkingSpace;
 import parking.ParkingSystem;
-import payments.PaymentProvider;
+import Strategy.*;
 import users.*;
+import Payment.*;
 
 public class ReservationSystem {
 	

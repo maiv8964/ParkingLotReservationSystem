@@ -3,3 +3,4 @@ admin,admin,1,admin@yorku.ca,admin,admin
 student,student,2,student@yorku.ca,student,student
 visitor,visitor,3,visitor@yorku.ca,visitor,visitor
 faculty,faculty,4,faculty@yorku.ca,faculty,faculty
+test,test,5,test,test,faculty

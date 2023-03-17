@@ -16,7 +16,8 @@ public class main implements ActionListener {
 	private static MaintainUser maintain = new MaintainUser();
 	private static String path = "user.csv";
 	private static UserInfo currentuser;
-	private static UserList userList;
+	private static UserList userList; // keeps track of all created accounts
+	
 
 	// Login Page
 	private static JPanel mainPanel0;
@@ -82,6 +83,8 @@ public class main implements ActionListener {
 	private static JButton pay;
 	private static JLabel paysuccess;
 	
+	// Booking Confirmation Page
+	
 
 	public static void main(String[] args) throws Exception {
 		
@@ -97,31 +100,12 @@ public class main implements ActionListener {
 		ArrayList<User> users = maintain.users;
 		
 		for(int i = 0; i < maintain.users.size(); i++) {
+			
 			String email = users.get(i).getEmail();
 			String password = users.get(i).getPassword();
 			String type = users.get(i).getType();
 			
-			if(type.equals("student")) {
-				
-				Student student = new Student(email, password);
-				userList.getList().add(student);
-				
-			}else if(type.equals("faculty")) {
-				
-				FacultyMember faculty = new FacultyMember(email, password);
-				userList.getList().add(faculty);
-				
-			}else if(type.equals("non-faculty")) {
-				
-				NonFacultyStaff nfaculty = new NonFacultyStaff(email, password);
-				userList.getList().add(nfaculty);
-				
-			}else if(type.equals("visitor")) {
-				
-				Visitor visitor = new Visitor(email, password);
-				userList.getList().add(visitor);
-				
-			}	
+			addToUserList(email, password, type);
 			
 		}
 		
@@ -133,6 +117,31 @@ public class main implements ActionListener {
 		
 		paymentPage();
 
+	}
+
+	private static void addToUserList(String email, String password, String type) {
+		
+		if(type.equals("student")) {
+			
+			Student student = new Student(email, password);
+			userList.getList().add(student);
+			
+		}else if(type.equals("faculty")) {
+			
+			FacultyMember faculty = new FacultyMember(email, password);
+			userList.getList().add(faculty);
+			
+		}else if(type.equals("non-faculty")) {
+			
+			NonFacultyStaff nfaculty = new NonFacultyStaff(email, password);
+			userList.getList().add(nfaculty);
+			
+		}else if(type.equals("visitor")) {
+			
+			Visitor visitor = new Visitor(email, password);
+			userList.getList().add(visitor);
+		}
+		
 	}
 
 	private static void loginPage() {
@@ -585,7 +594,6 @@ public class main implements ActionListener {
 		
 	}
 	
-	
 	private boolean checkLogin(String username, String password) throws Exception {
 
 		ClassLoader classLoader = getClass().getClassLoader();
@@ -596,6 +604,16 @@ public class main implements ActionListener {
 					&& maintain.users.get(i).getPassword().equals(password)) {
 				
 				System.out.println("Logged in user is type: " + maintain.users.get(i).getType());
+
+				// Set to current user
+				for(int j = 0; j < userList.getList().size(); j++) {
+					
+					if (userList.getList().get(j).getEmail().equals(username) && userList.getList().get(j).getPassword().equals(password)) {
+						this.currentuser = userList.getList().get(j);
+					}
+				}
+				
+				
 				return true;
 			}
 
@@ -695,27 +713,8 @@ public class main implements ActionListener {
 				maintain.update(path);
 				
 				// Adds to userlist
-				if(type.equals("student")) {
-					
-					Student student = new Student(email, password);
-					userList.getList().add(student);
-					
-				}else if(type.equals("faculty")) {
-					
-					FacultyMember faculty = new FacultyMember(email, password);
-					userList.getList().add(faculty);
-					
-				}else if(type.equals("non-faculty")) {
-					
-					NonFacultyStaff nfaculty = new NonFacultyStaff(email, password);
-					userList.getList().add(nfaculty);
-					
-				}else if(type.equals("visitor")) {
-					
-					Visitor visitor = new Visitor(email, password);
-					userList.getList().add(visitor);
-					
-				}
+				addToUserList(email, password, type);
+				
 				
 				System.out.println("Registering user: [type: " + type + ", first name: " + fname + ", last name: "+ lname + ", email: " + email + ", password: " + password + "]");
 				

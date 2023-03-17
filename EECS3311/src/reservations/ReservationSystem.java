@@ -27,12 +27,12 @@ public class ReservationSystem {
 	}
 	
 	// Create a reservation for user
-	public Reservation createReservation(User user, int duration, Time start_time, String licence_plate, ParkingSpace space, PaymentProvider payment_provider) {
-		if(user.getIsValidated() && space.getCurrentReservation() == null && user.currentReservation == null) {//Check that user and space can accept a reservation
-			if(payment_provider.handlePayment(user.getPaymentInfo(),(double)user.getParkingRate())==true) {
+	public Reservation createReservation(UserInfo userInfo, int duration, Time start_time, String licence_plate, ParkingSpace space, PaymentProvider payment_provider) {
+		if(userInfo.getIsValidated() && space.getCurrentReservation() == null && userInfo.currentReservation == null) {//Check that user and space can accept a reservation
+			if(payment_provider.handlePayment(userInfo.getPaymentInfo(),(double)userInfo.getParkingRate())==true) {
 				Reservation reservation = new Reservation(duration, start_time, licence_plate, space);
 				space.setCurrentReservation(reservation);
-				user.currentReservation = reservation;
+				userInfo.currentReservation = reservation;
 				return reservation;
 			}else {
 				return null;//Payment failed
@@ -53,21 +53,21 @@ public class ReservationSystem {
 		return this.parkingSystem.getLots();
 	}
 	
-	public void cancelBooking(Reservation reservation, User user) {
+	public void cancelBooking(Reservation reservation, UserInfo userInfo) {
 		reservation.getSpace().setCurrentReservation(null);//Clear 
-		user.currentReservation = null;
+		userInfo.currentReservation = null;
 	}
 	
-	public void payBalance(Reservation reservation, User user, PaymentProvider provider) {
+	public void payBalance(Reservation reservation, UserInfo userInfo, PaymentProvider provider) {
 		if(reservation.getDuration()>1) {//The user booked for more than 1 hour, deposit does not cover full payment
-			provider.handlePayment(user.getPaymentInfo(), this.calculateOutstanding(reservation, user));
+			provider.handlePayment(userInfo.getPaymentInfo(), this.calculateOutstanding(reservation, userInfo));
 		}else {
 			//No extra payment outstanding, rejoice!
 		}
 	}
 	
-	private double calculateOutstanding(Reservation reservation,User user) {
-		return (double)(reservation.getDuration()-1) * user.getParkingRate();
+	private double calculateOutstanding(Reservation reservation,UserInfo userInfo) {
+		return (double)(reservation.getDuration()-1) * userInfo.getParkingRate();
 	}
 
 }

@@ -1,6 +1,6 @@
 package users;
 
-public class FacultyMember extends User {
+public class FacultyMember extends UserInfo {
 
 	public FacultyMember(String username, String password) {
 		super(username, password);

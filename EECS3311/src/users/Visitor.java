@@ -1,6 +1,6 @@
 package users;
 
-public class Visitor extends User{
+public class Visitor extends UserInfo{
 	
 	
 

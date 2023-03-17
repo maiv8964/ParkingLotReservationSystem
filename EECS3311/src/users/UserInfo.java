@@ -3,17 +3,15 @@ package users;
 import reservations.Reservation;
 import Payment.*;
 
-public abstract class User{
+public abstract class UserInfo{
 	private PaymentInfo payment_info;
 	private String username;
 	private String password;
-	public String first_name;
-	public String last_name;
 	private boolean isValidated;
 	//public Reservation currentReservation;
 	public Reservation currentReservation;
 	
-	public User(String username, String password) {
+	public UserInfo(String username, String password) {
 		this.username=username;
 		this.password=password;
 	}
@@ -22,15 +20,12 @@ public abstract class User{
 		//communicate with Reservation system !?
 	}
 	
-	public PaymentInfo getPaymentInfo() {
-		return this.payment_info;
-	}
-	
 	public boolean getIsValidated() {
 		return this.isValidated;
 	}
 	
 	public abstract int getParkingRate();
+	
 	public String getEmail() {
 		return this.username;
 	}

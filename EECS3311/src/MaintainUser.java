@@ -15,10 +15,11 @@ public class MaintainUser {
 		while(reader.readRecord()){ 
 			User user = new User();
 			//name,id,email,password
-			user.setName(reader.get("name"));
+			user.setName(reader.get("first"), reader.get("last"));
 			user.setId(Integer.valueOf(reader.get("id")));
 			user.setEmail(reader.get("email"));
 			user.setPassword(reader.get("password"));
+			user.setType(reader.get("type"));
 			users.add(user);
 		}
 	}
@@ -27,19 +28,23 @@ public class MaintainUser {
 		try {		
 				CsvWriter csvOutput = new CsvWriter(new FileWriter(path, false), ',');
 				//name,id,email,password
-				csvOutput.write("name");
+				csvOutput.write("first");
+				csvOutput.write("last");
 				csvOutput.write("id");
 		    	csvOutput.write("email");
 				csvOutput.write("password");
+				csvOutput.write("type");
 				csvOutput.endRecord();
 
 				// else assume that the file already has the correct header line
 				// write out a few records
 				for(User u: users){
-					csvOutput.write(u.getName());
+					csvOutput.write(u.getFName());
+					csvOutput.write(u.getLName());
 					csvOutput.write(String.valueOf(u.getId()));
 					csvOutput.write(u.getEmail());
 					csvOutput.write(u.getPassword());
+					csvOutput.write(u.getType());
 					csvOutput.endRecord();
 				}
 				csvOutput.close();

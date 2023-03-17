@@ -4,20 +4,20 @@ import java.util.Date;
 
 public class PaymentInfo {
     private int cardNum;
-    private Date expDate;
+    private int expDate;
     private String billingAddress;
     private String billingName;
     private int securityCode;
     private double cardBallance;
 
     
-	public PaymentInfo(int cardNum, Date expDate, String billingAddress, String billingName, int securityCode, double cardBallance) {
+	public PaymentInfo(int cardNum, int expDate, String billingAddress, String billingName, int securityCode) {
         this.cardNum = cardNum;
         this.expDate = expDate;
         this.billingAddress = billingAddress;
         this.billingName = billingName;
         this.securityCode = securityCode;
-        this.cardBallance = cardBallance;
+        //this.cardBallance = cardBallance;
     }
 	
 	public double getCardBallance() {
@@ -37,11 +37,11 @@ public class PaymentInfo {
 		this.cardNum = cardNum;
 	}
 
-	public Date getExpDate() {
+	public int getExpDate() {
 		return expDate;
 	}
 
-	public void setExpDate(Date expDate) {
+	public void setExpDate(int expDate) {
 		this.expDate = expDate;
 	}
 

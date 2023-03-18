@@ -29,26 +29,26 @@ public class Manager {
 		this.password = password;
 	}
 	
-	public boolean validateUser(User user) {
+	public boolean validateUser(UserInfo userInfo) {
 		
 		// instanceof is a binary operator we use to test if an object is of a given type
 		// If the user is registering as a student, faculty member, or non-faculty staff, their registration requires further validation from the management team
 		
-		if(user instanceof Student || user instanceof FacultyMember || user instanceof NonFacultyStaff) {
-			System.out.println("New " + user.toString() + " registration requires validation:\n");
+		if(userInfo instanceof Student || userInfo instanceof FacultyMember || userInfo instanceof NonFacultyStaff) {
+			System.out.println("New " + userInfo.toString() + " registration requires validation:\n");
 			
-			if (validateWithManagement(user) == false) {
+			if (validateWithManagement(userInfo) == false) {
 	            System.out.println("User validation with management team failed.");
 	            return false;
 	        }else {
 			   // Check if the email address is in a valid format
-			   if (isValidEmail(user.getEmail()) == false) {
+			   if (isValidEmail(userInfo.getEmail()) == false) {
 			      System.out.println("Invalid email address.");
 			      return false;
 			   }
 
 			   // Check if the password is strong enough
-			   if (isStrongPassword(user.getPassword()) == false) {
+			   if (isStrongPassword(userInfo.getPassword()) == false) {
 			      System.out.println("Password must contain at least one uppercase letter, one lowercase letter, one number, and one symbol.");
 			      return false;
 			   }
@@ -56,15 +56,15 @@ public class Manager {
 	        }
 			
 		// If the user is registering as a visitor, no further validation required
-		}else if(user instanceof Visitor) {
+		}else if(userInfo instanceof Visitor) {
 			// Check if the email address is in a valid format
-			   if (isValidEmail(user.getEmail()) == false) {
+			   if (isValidEmail(userInfo.getEmail()) == false) {
 			      System.out.println("Invalid email address.");
 			      return false;
 			   }
 
 			   // Check if the password is strong enough
-			   if (isStrongPassword(user.getPassword()) == false) {
+			   if (isStrongPassword(userInfo.getPassword()) == false) {
 			      System.out.println("Password must contain at least one uppercase letter, one lowercase letter, one number, and one symbol.");
 			      return false;
 			   }
@@ -76,7 +76,7 @@ public class Manager {
 		  
 	}
 
-		private boolean validateWithManagement(User user) {
+		private boolean validateWithManagement(UserInfo userInfo) {
 		// TODO Auto-generated method stub
 			Random random = new Random();
 		    boolean randomBoolean = random.nextBoolean();

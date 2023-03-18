@@ -6,9 +6,18 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
+import Payment.*;
+import Strategy.*;
+import users.*;
+
 public class main implements ActionListener {
 
 	private static JFrame Frame;
+	private static MaintainUser maintain = new MaintainUser();
+	private static String path = "user.csv";
+	private static UserInfo currentuser;
+	private static UserList userList; // keeps track of all created accounts
+	
 
 	// Login Page
 	private static JPanel mainPanel0;
@@ -26,13 +35,16 @@ public class main implements ActionListener {
 	private static JPanel mainPanel1;
 	private static JPanel registerPanel;
 	private static JPanel typesPanel;
-	private static JLabel nameLabel;
-	private static JTextField nameText;
+	private static JLabel fnameLabel;
+	private static JTextField fnameText;
+	private static JLabel lnameLabel;
+	private static JTextField lnameText;
 	private static JLabel userRegLabel;
 	private static JTextField userRegText;
 	private static JLabel passwordRegLabel;
 	private static JTextField passwordRegText;
 	private static JButton registerUser;
+	private static JLabel regsuccess;
 	
 	private static JRadioButton student = new JRadioButton("Students");
 	private static JRadioButton faculty = new JRadioButton("Faculty");
@@ -40,6 +52,7 @@ public class main implements ActionListener {
 	private static JRadioButton visitor = new JRadioButton("Visitor");
 	
 	// Main Page
+	private static JButton mainBack;
 	private static JPanel mainPanel2;
 	private static JPanel topPanel;
 	private static JPanel bottomPanel;
@@ -47,52 +60,79 @@ public class main implements ActionListener {
 	private static JButton[] parkingspot = new JButton[101];
 	
 	// Payment Page
+	private static JButton payBack;
+	private static JPanel mainPanel3;
+	private static JPanel ptypesPanel;
 	private static JPanel paymentPanel;
+	
+	private static JRadioButton debit = new JRadioButton("Debit Card");
+	private static JRadioButton credit = new JRadioButton("Credit Card");
+	private static ButtonGroup group = new ButtonGroup();
+	
+	private static JLabel costLabel;
+	private static JLabel cardNameLabel;
+	private static JTextField cardNameText;
+	private static JLabel cardNumLabel;
+	private static JTextField cardNumText;
+	private static JLabel expiryLabel;
+	private static JTextField expiryText;
+	private static JLabel billingLabel;
+	private static JTextField billingText;
+	private static JLabel securityCodeLabel;
+	private static JTextField securityCodeText;
+	private static JButton pay;
+	private static JLabel paysuccess;
+	
+	// Booking Confirmation Page
+	
 
-	public static void main(String[] args) {
-		
-		loginPage();
-
-		registerPage();
-		
-		mainPage();
-		
-		// PAYMENT PAGE
-		
-//		paymentPanel = new JPanel();
-//		paymentPanel.setVisible(false);
-//		paymentPanel.setLayout(new BoxLayout(paymentPanel, BoxLayout.PAGE_AXIS));
-//		//Frame.getContentPane().add(mainPanel);
-//		
-//		JRadioButton debit = new JRadioButton("Debit Card");
-//		JRadioButton credit = new JRadioButton("Credit Card");
-//		
-//		ButtonGroup group = new ButtonGroup();
-//		group.add(debit);
-//		group.add(credit);
-//		
-//		paymentPanel.add(debit);
-//		paymentPanel.add(credit);
-//		
-//		JLabel label3 = new JLabel("Insert Payment Information");
-//		label.setAlignmentX(Component.CENTER_ALIGNMENT);
-//		paymentPanel.add(label3);
-		
-		
-		
-		/////////////////////////////////////////////////////////////////////////
-
-	}
-
-	public static void loginPage() {
+	public static void main(String[] args) throws Exception {
 		
 		Frame = new JFrame("YorkU Parking Booking System");
 		Frame.setResizable(false);
 		Frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		Frame.setSize(800, 800);
 		
-		mainPanel0 = new JPanel();
+		//currentuser = new UserInfo();
+		userList = new UserList();
+		maintain.load(path);
+		
+		// add already created users into the userList
+		ArrayList<User> users = maintain.users;
+		
+		for(int i = 0; i < maintain.users.size(); i++) {
+			
+			String email = users.get(i).getEmail();
+			String password = users.get(i).getPassword();
+			String type = users.get(i).getType();
+			
+			addToUserList(email, password, type);
+			
+		}
+		
+		loginPage();
 		mainPanel0.setVisible(true);
+
+		//registerPage();
+		
+		//mainPage();
+		
+		//paymentPage();
+
+	}
+
+	private static void addToUserList(String email, String password, String type) {
+		
+		UserInfoFactory factory = new UserInfoFactory();
+		
+		userList.getList().add(factory.makeUser(type, type, password));
+		
+	}
+
+	private static void loginPage() {
+		
+		mainPanel0 = new JPanel();
+		mainPanel0.setVisible(false);
 		mainPanel0.setLayout(new BoxLayout(mainPanel0, BoxLayout.PAGE_AXIS));
 		Frame.getContentPane().add(mainPanel0);
 
@@ -136,6 +176,8 @@ public class main implements ActionListener {
 		register.addActionListener(new main());
 		loginPanel.add(register);
 		
+		loginPanel.add(Box.createVerticalStrut(10)); // spacer
+		
 		// Success message
 		success = new JLabel("");
 		success.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -146,15 +188,22 @@ public class main implements ActionListener {
 		
 	}
 	
-	public static void registerPage() {
+	private static void registerPage() {
 		
 		mainPanel1 = new JPanel();
 		mainPanel1.setVisible(false);
 		mainPanel1.setLayout(new BoxLayout(mainPanel1, BoxLayout.PAGE_AXIS));
 		Frame.getContentPane().add(mainPanel1);
 		
+		mainPanel1.add(Box.createVerticalStrut(50)); // spacer
+		
+		regBack = new JButton("Back");
+		regBack.setAlignmentX(Component.CENTER_ALIGNMENT);
+		regBack.addActionListener(new main());
+		mainPanel1.add(regBack);
+		
 		typesPanel = new JPanel();
-		typesPanel.setBorder(new EmptyBorder(100, 10, 10, 10));
+		typesPanel.setBorder(new EmptyBorder(30, 10, 10, 10));
 		typesPanel.setBounds(0, 0, 500, 100);
 		typesPanel.setLayout(new BoxLayout(typesPanel, BoxLayout.LINE_AXIS));
 		
@@ -170,20 +219,31 @@ public class main implements ActionListener {
 		typesPanel.add(visitor);
 		
 		registerPanel = new JPanel();
-		registerPanel.setVisible(false);
 		registerPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
 		registerPanel.setBounds(0, 300, 600, 100);
 		registerPanel.setLayout(new BoxLayout(registerPanel, BoxLayout.PAGE_AXIS));
 		
-		// Name
-		nameLabel = new JLabel("Name");
-		nameLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-		registerPanel.add(nameLabel);
+		// First Name
+		fnameLabel = new JLabel("First Name");
+		fnameLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+		fnameLabel.setBorder(new EmptyBorder(10, 10, 10, 10));
+		registerPanel.add(fnameLabel);
 		
-		nameText = new JTextField();
-		nameText.setAlignmentX(Component.CENTER_ALIGNMENT);
-		nameText.setMaximumSize(new Dimension(150, 25));
-		registerPanel.add(nameText);
+		fnameText = new JTextField();
+		fnameText.setAlignmentX(Component.CENTER_ALIGNMENT);
+		fnameText.setMaximumSize(new Dimension(150, 25));
+		registerPanel.add(fnameText);
+		
+		// Last Name
+		lnameLabel = new JLabel("Last Name");
+		lnameLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+		lnameLabel.setBorder(new EmptyBorder(10, 10, 10, 10));
+		registerPanel.add(lnameLabel);
+		
+		lnameText = new JTextField();
+		lnameText.setAlignmentX(Component.CENTER_ALIGNMENT);
+		lnameText.setMaximumSize(new Dimension(150, 25));
+		registerPanel.add(lnameText);
 		
 		// Username/Email
 		userRegLabel = new JLabel("Email");
@@ -215,17 +275,31 @@ public class main implements ActionListener {
 		registerUser.addActionListener(new main());
 		registerPanel.add(registerUser);
 		
+		registerPanel.add(Box.createVerticalStrut(10)); // spacer
+		
+		// Success message
+		regsuccess = new JLabel("");
+		regsuccess.setAlignmentX(Component.CENTER_ALIGNMENT);
+		registerPanel.add(regsuccess);
+		
 		mainPanel1.add(typesPanel, BorderLayout.PAGE_START);
 		mainPanel1.add(registerPanel, BorderLayout.PAGE_START);
 		
 	}
 	
-	public static void mainPage() {
+	private static void mainPage() {
 		
 		mainPanel2 = new JPanel();
 		mainPanel2.setVisible(false);
 		mainPanel2.setLayout(new BoxLayout(mainPanel2, BoxLayout.PAGE_AXIS));
 		Frame.getContentPane().add(mainPanel2);
+		
+		mainPanel2.add(Box.createVerticalStrut(10)); // spacer
+		
+		mainBack = new JButton("Logout");
+		mainBack.setAlignmentX(Component.CENTER_ALIGNMENT);
+		mainBack.addActionListener(new main());
+		mainPanel2.add(mainBack);
 
 		// Top part of screen
 		topPanel = new JPanel();
@@ -261,7 +335,7 @@ public class main implements ActionListener {
 		
 	}
 	
-	public static void loadSpots() {
+	private static void loadSpots() {
 
 		for (int i = 1; i <= 10; i++) {
 
@@ -385,19 +459,157 @@ public class main implements ActionListener {
 		}
 	}
 
-	public boolean checkLogin(String username, String password) throws Exception {
+	private static void paymentPage() {
+		
+		// Payment Page
+//		private static JButton payBack;
+//		private static JPanel mainPanel3;
+//		private static JPanel paymentPanel;
+		
+		mainPanel3 = new JPanel();
+		mainPanel3.setVisible(false);
+		mainPanel3.setLayout(new BoxLayout(mainPanel3, BoxLayout.PAGE_AXIS));
+		Frame.getContentPane().add(mainPanel3);
+		
+		mainPanel3.add(Box.createVerticalStrut(10)); // spacer
+		
+		
+		payBack = new JButton("Back");
+		payBack.setAlignmentX(Component.CENTER_ALIGNMENT);
+		payBack.addActionListener(new main());
+		mainPanel3.add(payBack);
+		
+		mainPanel3.add(Box.createVerticalStrut(20)); // spacer
+		
+		int cost = currentuser.getParkingRate();
+		JLabel paymentLabel = new JLabel("You will be charged: $" + cost + "\n");
+		paymentLabel.setFont(new Font("", Font.PLAIN, 30));
+		paymentLabel.setForeground(Color.red);
+		paymentLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+		mainPanel3.add(paymentLabel);
+		
+		mainPanel3.add(Box.createVerticalStrut(50)); // spacer
+		
+		JLabel label = new JLabel("Insert Payment Information:");
+		label.setAlignmentX(Component.CENTER_ALIGNMENT);
+		mainPanel3.add(label);
+		
+		ptypesPanel = new JPanel();
+		ptypesPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
+		ptypesPanel.setBounds(0, 0, 500, 100);
+		ptypesPanel.setLayout(new BoxLayout(ptypesPanel, BoxLayout.LINE_AXIS));
+		
+		// Payment types
+		group.add(debit);
+		group.add(credit);
+		
+		ptypesPanel.add(debit);
+		ptypesPanel.add(credit);
+		
+		paymentPanel = new JPanel();
+		paymentPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
+		paymentPanel.setBounds(0, 0, 500, 100);
+		paymentPanel.setLayout(new BoxLayout(paymentPanel, BoxLayout.PAGE_AXIS));
+		
+		// Cardholder name
+		cardNameLabel = new JLabel("Cardholder Name");
+		cardNameLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+		cardNameLabel.setBounds(0, 0, 500, 100);
+		cardNameLabel.setBorder(new EmptyBorder(10, 10, 10, 10));
+		paymentPanel.add(cardNameLabel);
+		
+		cardNameText = new JTextField();
+		cardNameText.setAlignmentX(Component.CENTER_ALIGNMENT);
+		cardNameText.setMaximumSize(new Dimension(150, 25));
+		paymentPanel.add(cardNameText);
+		
+		// Card number
+		cardNumLabel = new JLabel("Card Number");
+		cardNumLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+		cardNumLabel.setBounds(0, 0, 500, 100);
+		cardNumLabel.setBorder(new EmptyBorder(10, 10, 10, 10));
+		paymentPanel.add(cardNumLabel);
+		
+		cardNumText = new JTextField();
+		cardNumText.setAlignmentX(Component.CENTER_ALIGNMENT);
+		cardNumText.setMaximumSize(new Dimension(150, 25));
+		paymentPanel.add(cardNumText);
+		
+		// Expiry
+		expiryLabel = new JLabel("Expiry (MMYY)");
+		expiryLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+		expiryLabel.setBounds(0, 0, 500, 100);
+		expiryLabel.setBorder(new EmptyBorder(10, 10, 10, 10));
+		paymentPanel.add(expiryLabel);
+		
+		expiryText = new JTextField();
+		expiryText.setAlignmentX(Component.CENTER_ALIGNMENT);
+		expiryText.setMaximumSize(new Dimension(150, 25));
+		paymentPanel.add(expiryText);
+		
+		// Billing address
+		billingLabel = new JLabel("Billing Address");
+		billingLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+		billingLabel.setBounds(0, 0, 500, 100);
+		billingLabel.setBorder(new EmptyBorder(10, 10, 10, 10));
+		paymentPanel.add(billingLabel);
+		
+		billingText = new JTextField();
+		billingText.setAlignmentX(Component.CENTER_ALIGNMENT);
+		billingText.setMaximumSize(new Dimension(150, 25));
+		paymentPanel.add(billingText);
+		
+		// Security number
+		securityCodeLabel = new JLabel("Security Code");
+		securityCodeLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+		securityCodeLabel.setBounds(0, 0, 500, 100);
+		securityCodeLabel.setBorder(new EmptyBorder(10, 10, 10, 10));
+		paymentPanel.add(securityCodeLabel);
+		
+		securityCodeText = new JTextField();
+		securityCodeText.setAlignmentX(Component.CENTER_ALIGNMENT);
+		securityCodeText.setMaximumSize(new Dimension(150, 25));
+		paymentPanel.add(securityCodeText);
+		
+		paymentPanel.add(Box.createVerticalStrut(30)); // spacer
+		
+		// Confirm and pay
+		pay = new JButton("Confirm and Pay");
+		pay.setAlignmentX(Component.CENTER_ALIGNMENT);
+		pay.addActionListener(new main());
+		paymentPanel.add(pay);
+		
+		paymentPanel.add(Box.createVerticalStrut(10)); // spacer
+		
+		// Success message
+		paysuccess = new JLabel("");
+		paysuccess.setAlignmentX(Component.CENTER_ALIGNMENT);
+		paymentPanel.add(paysuccess);
+		
+		mainPanel3.add(ptypesPanel, BorderLayout.PAGE_START);
+		mainPanel3.add(paymentPanel, BorderLayout.PAGE_END);
+		
+	}
+	
+	private boolean checkLogin(String username, String password) throws Exception {
 
-		MaintainUser maintain = new MaintainUser();
 		ClassLoader classLoader = getClass().getClassLoader();
-		String path = "user.csv";
-
-		maintain.load(path);
 
 		for (int i = 0; i < maintain.users.size(); i++) {
-
 			// User exists
 			if (maintain.users.get(i).getEmail().equals(username)
 					&& maintain.users.get(i).getPassword().equals(password)) {
+				
+				System.out.println("Logged in user is type: " + maintain.users.get(i).getType());
+
+				// Set to current user
+				for(int j = 0; j < userList.getList().size(); j++) {
+					
+					if (userList.getList().get(j).getEmail().equals(username) && userList.getList().get(j).getPassword().equals(password)) {
+						this.currentuser = userList.getList().get(j);
+					}
+				}
+				
 				return true;
 			}
 
@@ -406,14 +618,135 @@ public class main implements ActionListener {
 		// User doesn't exist
 		return false;
 	}
+	
+	private void loginActions(ActionEvent e) {
+		
+		if (e.getSource() == loginButton) { // Press login button
 
-	@Override
-	public void actionPerformed(ActionEvent e) {
+			String username = userText.getText();
+			String password = passwordText.getText();
+			System.out.println("Login Info: [username: " + username + ", password: " + password + "]");
 
+			try {
+
+				if (checkLogin(username, password)) {
+					success.setForeground(new Color(0, 153, 0));
+					System.out.println("Successful Login");
+
+					mainPanel0.setVisible(false);
+					
+					mainPage();
+					Frame.add(mainPanel2);
+					mainPanel2.setVisible(true);
+
+				} else {
+					success.setForeground(Color.red);
+					success.setText("Login incorrect");
+					System.out.println("Failed Login");
+				}
+
+			} catch (Exception e1) {
+				e1.printStackTrace();
+			}
+
+		}
+		
+		if (e.getSource() == register) { // user wants to register account
+			
+			System.out.println("Register new user");
+			
+			mainPanel0.setVisible(false);
+			
+			registerPage();
+			Frame.add(mainPanel1);
+			mainPanel1.setVisible(true);
+			
+		}
+		
+	}
+	
+	public void registerActions(ActionEvent e) throws Exception {
+		
+		if(e.getSource() == regBack) {
+			
+			System.out.println("Back to login page");
+			
+			mainPanel1.setVisible(false);
+			
+			loginPage();
+			mainPanel0.setVisible(true);
+			
+			
+		}
+		
+		if (e.getSource() == registerUser) {
+			
+			String fname = "";
+			String lname = "";
+			String email = "";
+			String password = "";
+			String type = "";
+			
+			fname = fnameText.getText();
+			lname = lnameText.getText();
+			email = userRegText.getText();
+			password = passwordRegText.getText();
+			
+			if(student.isSelected()) {
+				type = "student";
+			}else if(faculty.isSelected()) {
+				type = "faculty";
+			}else if(nfaculty.isSelected()) {
+				type = "non-faculty";
+			}else if(visitor.isSelected()) {
+				type = "visitor";
+			}
+			
+			if(fname.equals("") || lname.equals("") || email.equals("") || password.equals("") || type.equals("")) {
+				regsuccess.setForeground(Color.red);
+				regsuccess.setText("Please fill in all the fields");
+				System.out.println("Failed Register");
+			}else {
+				
+				// Adds to user.csv
+				User newuser = new User(fname, lname, maintain.users.size() + 1, email, password, type);
+				maintain.users.add(newuser);
+				maintain.update(path);
+				
+				// Adds to userlist
+				addToUserList(email, password, type);
+				
+				
+				System.out.println("Registering user: [type: " + type + ", first name: " + fname + ", last name: "+ lname + ", email: " + email + ", password: " + password + "]");
+				
+				mainPanel1.setVisible(false);
+				
+				loginPage();
+				mainPanel0.setVisible(true);
+				
+			}
+
+		}
+		
+	}
+
+	public void mainActions(ActionEvent e) {
+		
+		if(e.getSource() == mainBack) {
+			
+			System.out.println("User logged out");
+			userText = null;
+			passwordText = null;
+			
+			mainPanel2.setVisible(false);
+			
+			loginPage();
+			mainPanel0.setVisible(true);
+			
+		}
+		
 		int value = -1;
-
 		JButton button = null;
-
 		JComboBox lotlist = null;
 		String lotValue = "";
 		Object object = e.getSource();
@@ -435,82 +768,16 @@ public class main implements ActionListener {
 			lotValue = (String) lotlist.getSelectedItem();
 
 		}
-
-		// Login Check
-		if (e.getSource() == loginButton) { // Press login button
-
-			String username = userText.getText();
-			String password = passwordText.getText();
-			System.out.println("Login Info: [username: " + username + ", password: " + password + "]");
-
-			try {
-
-				if (checkLogin(username, password)) {
-					success.setForeground(new Color(0, 153, 0));
-					System.out.println("Successful Login");
-
-					mainPanel0.setVisible(false);
-					loginPanel.setVisible(false);
-					mainPanel2.setVisible(true);
-					
-					
-					Frame.add(mainPanel2);
-
-				} else {
-					success.setForeground(Color.red);
-					success.setText("Login incorrect");
-					System.out.println("Failed Login");
-				}
-
-			} catch (Exception e1) {
-				e1.printStackTrace();
-			}
-
-		}
-		
-		if (e.getSource() == register) { // user wants to register account
-			
-			System.out.println("Register new user");
-			
-			loginPanel.setVisible(false);
-			mainPanel0.setVisible(false);
-			registerPanel.setVisible(true);
-			mainPanel1.setVisible(true);
-			
-			Frame.add(mainPanel1);
-			
-		}
-		
-		if (e.getSource() == registerUser) {
-			
-			String name = nameText.getText();
-			String email = userRegText.getText();
-			String password = passwordRegText.getText();
-			String type = "";
-			
-			if(student.isSelected()) {
-				type = "student";
-			}else if(faculty.isSelected()) {
-				type = "faculty";
-			}else if(nfaculty.isSelected()) {
-				type = "non-faculty";
-			}else if(visitor.isSelected()) {
-				type = "visitor";
-			}
-			
-			System.out.println("Registering user: [type: " + type + ", name: " + name + ", email: " + email + ", password: " + password + "]");
-
-		}
 		
 		if (value >= 0 && value <= 100) { // Choose a parking spot
 
 			System.out.println("User chose: parking spot " + value);
+		
+			mainPanel2.setVisible(false);
 			
-			topPanel.setVisible(false);
-			bottomPanel.setVisible(false);
-			paymentPanel.setVisible(true);
-			
-			Frame.add(paymentPanel);
+			paymentPage();
+			Frame.add(mainPanel3);
+			mainPanel3.setVisible(true);
 			
 			System.out.println("On payment page");
 
@@ -521,6 +788,113 @@ public class main implements ActionListener {
 			System.out.println(lotValue + " chosen");
 
 		}
+		
+	}
+	
+	public void paymentActions(ActionEvent e) {
+		
+		if(e.getSource() == payBack) {
+			
+			System.out.println("Back to main page");
+			
+			mainPanel3.setVisible(false);
+			
+			paymentPage();
+			mainPanel2.setVisible(true);
+			
+		}
+		
+		if(e.getSource() == pay) {
+			
+			String name = "";
+			int cardNum = 0;
+			int expiry = 0;
+			String address = "";
+			int code = 0;
+		
+			
+			if(cardNameText.getText().equals("") || cardNumText.getText().length() == 0 || expiryText.getText().length() == 0 || billingText.getText().equals("") || securityCodeText.getText().length() == 0) {
+				
+				paysuccess.setForeground(Color.red);
+				paysuccess.setText("Please fill in all the fields correctly");
+				System.out.println("Failed Payment");
+				
+			}else {
+				
+				try {
+					
+					name = cardNameText.getText();
+					cardNum = Integer.parseInt(cardNumText.getText());
+					expiry = Integer.parseInt(expiryText.getText()); 
+					address = billingText.getText();
+					code = Integer.parseInt(securityCodeText.getText());
+					
+					String type = "";
+					
+					Context context = new Context(null);
+					
+					if(debit.isSelected()) {
+						
+						type = "User is paying with debit";
+						context = new Context(new DebitPaymentProvider());
+						
+					}else if(credit.isSelected()) {
+						type = "User is paying with credit";
+						context = new Context(new CreditPaymentProvide());
+					}
+					
+					if(type.equals("")) {
+						
+						paysuccess.setForeground(Color.red);
+						paysuccess.setText("Please fill in all the fields correctly");
+						System.out.println("Failed Payment");
+						
+					}else {
+						
+						PaymentInfo paymentinfo = new PaymentInfo(cardNum, expiry, address, name, code);
+						System.out.println(type);
+						boolean success = context.execute(paymentinfo, this.currentuser.getParkingRate());
+						if(success) {
+							
+							System.out.println("gong");
+							
+						}else {
+							paysuccess.setForeground(Color.red);
+							paysuccess.setText("Please fill in all the fields correctly");
+							System.out.println("Failed Payment");
+						}
+						
+					}
+					
+				}catch(NumberFormatException a) {
+					
+					paysuccess.setForeground(Color.red);
+					paysuccess.setText("Please fill in all the fields correctly");
+					System.out.println("Failed Payment");
+					
+				}
+
+			}
+			
+		}
+		
+	}
+	
+	@Override
+	public void actionPerformed(ActionEvent e) {
+
+		loginActions(e);
+		
+		try {
+			registerActions(e);
+		} catch (Exception e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		
+		mainActions(e);
+		
+		paymentActions(e);
 
 	}
 

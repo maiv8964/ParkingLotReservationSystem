@@ -1,16 +1,20 @@
 
 public class User {
-	public String name;
+	public String fname;
+	public String lname;
 	public int id;
 	public String email;
 	public String password;
+	public String type;
 	
-	public User(String name, int id, String email, String password) {
+	public User(String fname, String lname, int id, String email, String password, String type) {
 		super();
-		this.name = name;
+		this.fname = fname;
+		this.lname = lname;
 		this.id = id;
 		this.email = email;
 		this.password = password;
+		this.type = type;
 	}
 	
 	public User(){
@@ -18,12 +22,17 @@ public class User {
 	}
 	
 
-	public String getName() {
-		return name;
+	public String getFName() {
+		return fname;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public String getLName() {
+		return lname;
+	}
+	
+	public void setName(String fname, String lname) {
+		this.fname = fname;
+		this.lname = lname;
 	}
 
 	public int getId() {
@@ -52,7 +61,15 @@ public class User {
 
 	@Override
 	public String toString() {
-		return "User [name=" + name + ", id=" + id + ", email=" + email + ", password=" + password + "]";
+		return "User [name=" + fname + " " + lname + ", id=" + id + ", email=" + email + ", password=" + password + "]";
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
+	
+	public String getType() {
+		return this.type;
 	}
 	
 }

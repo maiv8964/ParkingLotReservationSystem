@@ -10,6 +10,7 @@ import paymentStrategy.*;
 import manager.*;
 import parking.*;
 import reservations.*;
+import userLogin.*;
 import users.*;
 
 public class main implements ActionListener {
@@ -59,7 +60,7 @@ public class main implements ActionListener {
 	private static JPanel topPanel;
 	private static JPanel bottomPanel;
 	private static JComboBox lots;
-	private static JButton[] parkingspot = new JButton[101];
+	private static JButton[] parkingspot = new JButton[101]; // parkingspot[0] isn't used to start from 1-100 spots
 	
 	// Payment Page
 	private static JButton payBack;
@@ -581,6 +582,10 @@ public class main implements ActionListener {
 		
 		mainPanel3.add(ptypesPanel, BorderLayout.PAGE_START);
 		mainPanel3.add(paymentPanel, BorderLayout.PAGE_END);
+		
+	}
+	
+	private static void confirmedBookingPage() {
 		
 	}
 	

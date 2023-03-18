@@ -5,7 +5,7 @@ import Payment.PaymentInfo;
 public class DebitPaymentProvider extends PaymentProvider {
 
 	@Override
-	public boolean handlePayment(PaymentInfo payment) {
+	public boolean handlePayment(PaymentInfo payment, double parkingRate) {
 		// TODO Auto-generated method stub
 		// perform payment processing using the "Debit" payment method
         System.out.println("Processing payment using Debit Type payment method...");

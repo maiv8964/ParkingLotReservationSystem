@@ -1,6 +1,6 @@
 first,last,id,email,password,type
-admin,admin,1,admin@yorku.ca,admin,admin
 student,student,2,student@yorku.ca,student,student
 visitor,visitor,3,visitor@yorku.ca,visitor,visitor
 faculty,faculty,4,faculty@yorku.ca,faculty,faculty
 test,test,5,test,test,faculty
+qwer,qwer,6,qwer,qwer,non-faculty

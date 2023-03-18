@@ -8,8 +8,11 @@ public abstract class UserInfo{
 	private String username;
 	private String password;
 	private boolean isValidated;
-	//public Reservation currentReservation;
 	public Reservation currentReservation;
+	
+	public UserInfo() {
+		
+	}
 	
 	public UserInfo(String username, String password) {
 		this.username=username;
@@ -36,7 +39,15 @@ public abstract class UserInfo{
 	
 	public void setValid() {
 		this.isValidated = true;
-		
+	}
+	
+	public void setPaymentInfo(PaymentInfo payment) {
+		this.payment_info = payment;
+	}
+	
+	public PaymentInfo getPaymentInfo() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 	
 	

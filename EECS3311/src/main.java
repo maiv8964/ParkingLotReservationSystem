@@ -93,6 +93,7 @@ public class main implements ActionListener {
 		Frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		Frame.setSize(800, 800);
 		
+		//currentuser = new UserInfo();
 		userList = new UserList();
 		maintain.load(path);
 		
@@ -110,44 +111,28 @@ public class main implements ActionListener {
 		}
 		
 		loginPage();
+		mainPanel0.setVisible(true);
 
-		registerPage();
+		//registerPage();
 		
-		mainPage();
+		//mainPage();
 		
-		paymentPage();
+		//paymentPage();
 
 	}
 
 	private static void addToUserList(String email, String password, String type) {
 		
-		if(type.equals("student")) {
-			
-			Student student = new Student(email, password);
-			userList.getList().add(student);
-			
-		}else if(type.equals("faculty")) {
-			
-			FacultyMember faculty = new FacultyMember(email, password);
-			userList.getList().add(faculty);
-			
-		}else if(type.equals("non-faculty")) {
-			
-			NonFacultyStaff nfaculty = new NonFacultyStaff(email, password);
-			userList.getList().add(nfaculty);
-			
-		}else if(type.equals("visitor")) {
-			
-			Visitor visitor = new Visitor(email, password);
-			userList.getList().add(visitor);
-		}
+		UserInfoFactory factory = new UserInfoFactory();
+		
+		userList.getList().add(factory.makeUser(type, type, password));
 		
 	}
 
 	private static void loginPage() {
 		
 		mainPanel0 = new JPanel();
-		mainPanel0.setVisible(true);
+		mainPanel0.setVisible(false);
 		mainPanel0.setLayout(new BoxLayout(mainPanel0, BoxLayout.PAGE_AXIS));
 		Frame.getContentPane().add(mainPanel0);
 
@@ -488,17 +473,29 @@ public class main implements ActionListener {
 		
 		mainPanel3.add(Box.createVerticalStrut(10)); // spacer
 		
-//		JLabel label3 = new JLabel("Insert Payment Information");
-//		label3.setAlignmentX(Component.CENTER_ALIGNMENT);
-//		paymentPanel.add(label3);
 		
 		payBack = new JButton("Back");
 		payBack.setAlignmentX(Component.CENTER_ALIGNMENT);
 		payBack.addActionListener(new main());
 		mainPanel3.add(payBack);
 		
+		mainPanel3.add(Box.createVerticalStrut(20)); // spacer
+		
+		int cost = currentuser.getParkingRate();
+		JLabel paymentLabel = new JLabel("You will be charged: $" + cost + "\n");
+		paymentLabel.setFont(new Font("", Font.PLAIN, 30));
+		paymentLabel.setForeground(Color.red);
+		paymentLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+		mainPanel3.add(paymentLabel);
+		
+		mainPanel3.add(Box.createVerticalStrut(50)); // spacer
+		
+		JLabel label = new JLabel("Insert Payment Information:");
+		label.setAlignmentX(Component.CENTER_ALIGNMENT);
+		mainPanel3.add(label);
+		
 		ptypesPanel = new JPanel();
-		ptypesPanel.setBorder(new EmptyBorder(30, 10, 10, 10));
+		ptypesPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
 		ptypesPanel.setBounds(0, 0, 500, 100);
 		ptypesPanel.setLayout(new BoxLayout(ptypesPanel, BoxLayout.LINE_AXIS));
 		
@@ -510,7 +507,7 @@ public class main implements ActionListener {
 		ptypesPanel.add(credit);
 		
 		paymentPanel = new JPanel();
-		paymentPanel.setBorder(new EmptyBorder(30, 10, 10, 10));
+		paymentPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
 		paymentPanel.setBounds(0, 0, 500, 100);
 		paymentPanel.setLayout(new BoxLayout(paymentPanel, BoxLayout.PAGE_AXIS));
 		
@@ -613,7 +610,6 @@ public class main implements ActionListener {
 					}
 				}
 				
-				
 				return true;
 			}
 
@@ -638,10 +634,10 @@ public class main implements ActionListener {
 					System.out.println("Successful Login");
 
 					mainPanel0.setVisible(false);
-					mainPanel2.setVisible(true);
 					
-					
+					mainPage();
 					Frame.add(mainPanel2);
+					mainPanel2.setVisible(true);
 
 				} else {
 					success.setForeground(Color.red);
@@ -660,8 +656,9 @@ public class main implements ActionListener {
 			System.out.println("Register new user");
 			
 			mainPanel0.setVisible(false);
-			Frame.add(mainPanel1);
+			
 			registerPage();
+			Frame.add(mainPanel1);
 			mainPanel1.setVisible(true);
 			
 		}
@@ -673,8 +670,12 @@ public class main implements ActionListener {
 		if(e.getSource() == regBack) {
 			
 			System.out.println("Back to login page");
+			
 			mainPanel1.setVisible(false);
+			
 			loginPage();
+			mainPanel0.setVisible(true);
+			
 			
 		}
 		
@@ -719,7 +720,9 @@ public class main implements ActionListener {
 				System.out.println("Registering user: [type: " + type + ", first name: " + fname + ", last name: "+ lname + ", email: " + email + ", password: " + password + "]");
 				
 				mainPanel1.setVisible(false);
+				
 				loginPage();
+				mainPanel0.setVisible(true);
 				
 			}
 
@@ -731,11 +734,14 @@ public class main implements ActionListener {
 		
 		if(e.getSource() == mainBack) {
 			
-			System.out.println("Logout");
+			System.out.println("User logged out");
 			userText = null;
 			passwordText = null;
+			
 			mainPanel2.setVisible(false);
+			
 			loginPage();
+			mainPanel0.setVisible(true);
 			
 		}
 		
@@ -768,8 +774,10 @@ public class main implements ActionListener {
 			System.out.println("User chose: parking spot " + value);
 		
 			mainPanel2.setVisible(false);
-			mainPanel3.setVisible(true);
+			
+			paymentPage();
 			Frame.add(mainPanel3);
+			mainPanel3.setVisible(true);
 			
 			System.out.println("On payment page");
 
@@ -788,9 +796,11 @@ public class main implements ActionListener {
 		if(e.getSource() == payBack) {
 			
 			System.out.println("Back to main page");
+			
 			mainPanel3.setVisible(false);
-			mainPanel2.setVisible(true);
+			
 			paymentPage();
+			mainPanel2.setVisible(true);
 			
 		}
 		
@@ -843,9 +853,11 @@ public class main implements ActionListener {
 						
 						PaymentInfo paymentinfo = new PaymentInfo(cardNum, expiry, address, name, code);
 						System.out.println(type);
-						boolean success = context.execute(paymentinfo);
+						boolean success = context.execute(paymentinfo, this.currentuser.getParkingRate());
 						if(success) {
+							
 							System.out.println("gong");
+							
 						}else {
 							paysuccess.setForeground(Color.red);
 							paysuccess.setText("Please fill in all the fields correctly");

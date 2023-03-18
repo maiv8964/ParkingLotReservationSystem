@@ -1,6 +1,5 @@
-package Strategy;
+package paymentStrategy;
 
-import Payment.PaymentInfo;
 import users.*;
 
 public abstract class PaymentProvider {

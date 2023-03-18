@@ -2,12 +2,9 @@ package reservations;
 import java.sql.Time;
 import java.util.Map;
 
-import parking.ParkingLot;
-import parking.ParkingSpace;
-import parking.ParkingSystem;
-import Strategy.*;
+import parking.*;
+import paymentStrategy.*;
 import users.*;
-import Payment.*;
 
 public class ReservationSystem {
 	

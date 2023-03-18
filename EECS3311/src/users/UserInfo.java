@@ -1,7 +1,7 @@
 package users;
 
 import reservations.Reservation;
-import Payment.*;
+import paymentStrategy.*;
 
 public abstract class UserInfo{
 	private PaymentInfo payment_info;

@@ -6,8 +6,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
-import Payment.*;
-import Strategy.*;
+import paymentStrategy.*;
+import manager.*;
+import parking.*;
+import reservations.*;
 import users.*;
 
 public class main implements ActionListener {
@@ -93,11 +95,10 @@ public class main implements ActionListener {
 		Frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		Frame.setSize(800, 800);
 		
-		//currentuser = new UserInfo();
 		userList = new UserList();
 		maintain.load(path);
 		
-		// add already created users into the userList
+		// Add already created users into the userList
 		ArrayList<User> users = maintain.users;
 		
 		for(int i = 0; i < maintain.users.size(); i++) {
@@ -112,12 +113,6 @@ public class main implements ActionListener {
 		
 		loginPage();
 		mainPanel0.setVisible(true);
-
-		//registerPage();
-		
-		//mainPage();
-		
-		//paymentPage();
 
 	}
 
@@ -287,6 +282,9 @@ public class main implements ActionListener {
 		
 	}
 	
+	// add feature to update lots when choosing a new lot, button to view current reservations
+	// admin ppl would have a button to enable/disable parkign lots, validate users
+	// supermanager can create managers here
 	private static void mainPage() {
 		
 		mainPanel2 = new JPanel();
@@ -335,6 +333,7 @@ public class main implements ActionListener {
 		
 	}
 	
+	// add update lots when choosing a new lot
 	private static void loadSpots() {
 
 		for (int i = 1; i <= 10; i++) {
@@ -461,18 +460,12 @@ public class main implements ActionListener {
 
 	private static void paymentPage() {
 		
-		// Payment Page
-//		private static JButton payBack;
-//		private static JPanel mainPanel3;
-//		private static JPanel paymentPanel;
-		
 		mainPanel3 = new JPanel();
 		mainPanel3.setVisible(false);
 		mainPanel3.setLayout(new BoxLayout(mainPanel3, BoxLayout.PAGE_AXIS));
 		Frame.getContentPane().add(mainPanel3);
 		
 		mainPanel3.add(Box.createVerticalStrut(10)); // spacer
-		
 		
 		payBack = new JButton("Back");
 		payBack.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -482,11 +475,11 @@ public class main implements ActionListener {
 		mainPanel3.add(Box.createVerticalStrut(20)); // spacer
 		
 		int cost = currentuser.getParkingRate();
-		JLabel paymentLabel = new JLabel("You will be charged: $" + cost + "\n");
-		paymentLabel.setFont(new Font("", Font.PLAIN, 30));
-		paymentLabel.setForeground(Color.red);
-		paymentLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-		mainPanel3.add(paymentLabel);
+		costLabel = new JLabel("You will be charged: $" + cost + "\n");
+		costLabel.setFont(new Font("", Font.PLAIN, 30));
+		costLabel.setForeground(Color.red);
+		costLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+		mainPanel3.add(costLabel);
 		
 		mainPanel3.add(Box.createVerticalStrut(50)); // spacer
 		
@@ -888,7 +881,6 @@ public class main implements ActionListener {
 		try {
 			registerActions(e);
 		} catch (Exception e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
 		

@@ -1,6 +1,4 @@
-package Strategy;
-
-import Payment.PaymentInfo;
+package paymentStrategy;
 
 public class MobilePaymentProvider extends PaymentProvider {
 

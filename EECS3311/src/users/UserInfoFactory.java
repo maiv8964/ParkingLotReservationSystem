@@ -7,25 +7,25 @@ public class UserInfoFactory {
 		UserInfo user = null;
 
 		if (type.equals("student")) {
-			System.out.println("student");
+	
 			user = new Student(username, password);
 
 		}
 
 		if (type.equals("faculty")) {
-			System.out.println("faculty");
+
 			user = new FacultyMember(username, password);
 
 		}
 
 		if (type.equals("non-faculty")) {
-			System.out.println("non-faculty");
+
 			user = new NonFacultyStaff(username, password);
 
 		}
 
 		if (type.equals("visitor")) {
-			System.out.println("visitor");
+
 			user = new Visitor(username, password);
 
 		}

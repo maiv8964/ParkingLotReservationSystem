@@ -25,7 +25,7 @@ public class ReservationSystem {
 	
 	// Create a reservation for user
 	public Reservation createReservation(UserInfo userInfo, int duration, Time start_time, String licence_plate, ParkingSpace space, PaymentProvider payment_provider) {
-		if(userInfo.getIsValidated() && space.getCurrentReservation() == null && userInfo.currentReservation == null) {//Check that user and space can accept a reservation
+		if(userInfo.getIsValid() && space.getCurrentReservation() == null && userInfo.currentReservation == null) {//Check that user and space can accept a reservation
 			if(payment_provider.handlePayment(userInfo.getPaymentInfo(),(double)userInfo.getParkingRate())==true) {
 				Reservation reservation = new Reservation(duration, start_time, licence_plate, space);
 				space.setCurrentReservation(reservation);

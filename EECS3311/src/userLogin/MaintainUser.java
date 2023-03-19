@@ -21,6 +21,7 @@ public class MaintainUser {
 			user.setEmail(reader.get("email"));
 			user.setPassword(reader.get("password"));
 			user.setType(reader.get("type"));
+			user.setValidation(reader.get("validation"));
 			users.add(user);
 		}
 	}
@@ -35,6 +36,7 @@ public class MaintainUser {
 		    	csvOutput.write("email");
 				csvOutput.write("password");
 				csvOutput.write("type");
+				csvOutput.write("validation");
 				csvOutput.endRecord();
 
 				// else assume that the file already has the correct header line
@@ -46,6 +48,7 @@ public class MaintainUser {
 					csvOutput.write(u.getEmail());
 					csvOutput.write(u.getPassword());
 					csvOutput.write(u.getType());
+					csvOutput.write(u.getValidation());
 					csvOutput.endRecord();
 				}
 				csvOutput.close();

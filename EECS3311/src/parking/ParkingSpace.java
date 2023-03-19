@@ -1,11 +1,13 @@
 package parking;
 
+import parkingState.*;
 import reservations.Reservation;
 
 public class ParkingSpace {
 	private int id;
 	private boolean is_enabled;
 	private Reservation current_reservation;
+	private State current_state;
 	
 	public ParkingSpace(int id) {
 		this.id = id;
@@ -27,6 +29,11 @@ public class ParkingSpace {
 
 	public void setEabled(boolean isEnable) {
 		this.is_enabled = isEnable;
+		if(this.isEnabled()) {
+			this.setState(new Enabled());
+		}else {
+			this.setState(new Disabled());
+		}
 	}
 
 	public Reservation getCurrentReservation() {
@@ -36,14 +43,12 @@ public class ParkingSpace {
 	public void setCurrentReservation(Reservation current_reservation) {
 		this.current_reservation = current_reservation;
 	}
+
+	public State getSensorStatus() {
+		return this.current_state;
+	}
 	
-	/**
-	 * Method will return the input parameter as no physical sensor exists. 
-	 * This allows the dynamic simulation of different inputs
-	 * @param sensorStatus The value to return
-	 * @return the sensorStatus parameter value
-	 */
-	public String getSensorStatus(String sensorStatus) {
-		return sensorStatus;
+	public void setState(State state) {
+		this.current_state = state;
 	}
 }

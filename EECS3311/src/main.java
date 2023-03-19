@@ -18,24 +18,24 @@ public class main implements ActionListener {
 	private static JFrame Frame;
 	private static MaintainUser maintain = new MaintainUser();
 	private static String path = "user.csv";
-	private static UserInfo currentuser;
+	private static UserInfo currentuser = null;
 	private static UserList userList; // keeps track of all created accounts
 	
 
 	// Login Page
-	private static JPanel mainPanel0;
+	private static JPanel loginGeneralPanel;
+	private static JPanel loginPanel;
 	private static JLabel userlabel;
 	private static JTextField userText;
 	private static JLabel passwordlabel;
 	private static JTextField passwordText;
 	private static JButton loginButton;
 	private static JLabel success;
-	private static JPanel loginPanel;
 	private static JButton register;
 	
 	// Register Page
 	private static JButton regBack;
-	private static JPanel mainPanel1;
+	private static JPanel registerGeneralPanel;
 	private static JPanel registerPanel;
 	private static JPanel typesPanel;
 	private static JLabel fnameLabel;
@@ -56,7 +56,7 @@ public class main implements ActionListener {
 	
 	// Main Page
 	private static JButton mainBack;
-	private static JPanel mainPanel2;
+	private static JPanel mainGeneralPage;
 	private static JPanel topPanel;
 	private static JPanel bottomPanel;
 	private static JComboBox lots;
@@ -64,7 +64,7 @@ public class main implements ActionListener {
 	
 	// Payment Page
 	private static JButton payBack;
-	private static JPanel mainPanel3;
+	private static JPanel paymentGeneralPage;
 	private static JPanel ptypesPanel;
 	private static JPanel paymentPanel;
 	
@@ -87,7 +87,10 @@ public class main implements ActionListener {
 	private static JLabel paysuccess;
 	
 	// Booking Confirmation Page
-	
+	private static JPanel confirmationGeneralPage;
+	private static JPanel confirmPanel;
+	private static JLabel confirmLabel;
+	private static JButton confirm;
 
 	public static void main(String[] args) throws Exception {
 		
@@ -113,7 +116,7 @@ public class main implements ActionListener {
 		}
 		
 		loginPage();
-		mainPanel0.setVisible(true);
+		loginGeneralPanel.setVisible(true);
 
 	}
 
@@ -121,19 +124,19 @@ public class main implements ActionListener {
 		
 		UserInfoFactory factory = new UserInfoFactory();
 		
-		userList.getList().add(factory.makeUser(type, type, password));
+		userList.getList().add(factory.makeUser(type, email, password));
 		
 	}
 
 	private static void loginPage() {
 		
-		mainPanel0 = new JPanel();
-		mainPanel0.setVisible(false);
-		mainPanel0.setLayout(new BoxLayout(mainPanel0, BoxLayout.PAGE_AXIS));
-		Frame.getContentPane().add(mainPanel0);
+		loginGeneralPanel = new JPanel();
+		loginGeneralPanel.setVisible(false);
+		loginGeneralPanel.setLayout(new BoxLayout(loginGeneralPanel, BoxLayout.PAGE_AXIS));
+		Frame.getContentPane().add(loginGeneralPanel);
 
 		loginPanel = new JPanel();
-		loginPanel.setBorder(new EmptyBorder(100, 10, 10, 10));
+		loginPanel.setBorder(new EmptyBorder(200, 10, 10, 10));
 		loginPanel.setLayout(new BoxLayout(loginPanel, BoxLayout.PAGE_AXIS));
 
 		// Username/Email
@@ -179,24 +182,24 @@ public class main implements ActionListener {
 		success.setAlignmentX(Component.CENTER_ALIGNMENT);
 		loginPanel.add(success);
 		
-		mainPanel0.add(loginPanel, BorderLayout.PAGE_START);
+		loginGeneralPanel.add(loginPanel, BorderLayout.PAGE_START);
 		Frame.setVisible(true);
 		
 	}
 	
 	private static void registerPage() {
 		
-		mainPanel1 = new JPanel();
-		mainPanel1.setVisible(false);
-		mainPanel1.setLayout(new BoxLayout(mainPanel1, BoxLayout.PAGE_AXIS));
-		Frame.getContentPane().add(mainPanel1);
+		registerGeneralPanel = new JPanel();
+		registerGeneralPanel.setVisible(false);
+		registerGeneralPanel.setLayout(new BoxLayout(registerGeneralPanel, BoxLayout.PAGE_AXIS));
+		Frame.getContentPane().add(registerGeneralPanel);
 		
-		mainPanel1.add(Box.createVerticalStrut(50)); // spacer
+		registerGeneralPanel.add(Box.createVerticalStrut(50)); // spacer
 		
 		regBack = new JButton("Back");
 		regBack.setAlignmentX(Component.CENTER_ALIGNMENT);
 		regBack.addActionListener(new main());
-		mainPanel1.add(regBack);
+		registerGeneralPanel.add(regBack);
 		
 		typesPanel = new JPanel();
 		typesPanel.setBorder(new EmptyBorder(30, 10, 10, 10));
@@ -278,8 +281,8 @@ public class main implements ActionListener {
 		regsuccess.setAlignmentX(Component.CENTER_ALIGNMENT);
 		registerPanel.add(regsuccess);
 		
-		mainPanel1.add(typesPanel, BorderLayout.PAGE_START);
-		mainPanel1.add(registerPanel, BorderLayout.PAGE_START);
+		registerGeneralPanel.add(typesPanel, BorderLayout.PAGE_START);
+		registerGeneralPanel.add(registerPanel, BorderLayout.PAGE_START);
 		
 	}
 	
@@ -288,17 +291,17 @@ public class main implements ActionListener {
 	// supermanager can create managers here
 	private static void mainPage() {
 		
-		mainPanel2 = new JPanel();
-		mainPanel2.setVisible(false);
-		mainPanel2.setLayout(new BoxLayout(mainPanel2, BoxLayout.PAGE_AXIS));
-		Frame.getContentPane().add(mainPanel2);
+		mainGeneralPage = new JPanel();
+		mainGeneralPage.setVisible(false);
+		mainGeneralPage.setLayout(new BoxLayout(mainGeneralPage, BoxLayout.PAGE_AXIS));
+		Frame.getContentPane().add(mainGeneralPage);
 		
-		mainPanel2.add(Box.createVerticalStrut(10)); // spacer
+		mainGeneralPage.add(Box.createVerticalStrut(10)); // spacer
 		
 		mainBack = new JButton("Logout");
 		mainBack.setAlignmentX(Component.CENTER_ALIGNMENT);
 		mainBack.addActionListener(new main());
-		mainPanel2.add(mainBack);
+		mainGeneralPage.add(mainBack);
 
 		// Top part of screen
 		topPanel = new JPanel();
@@ -328,8 +331,8 @@ public class main implements ActionListener {
 
 		loadSpots();
 
-		mainPanel2.add(topPanel, BorderLayout.PAGE_START);
-		mainPanel2.add(bottomPanel, BorderLayout.PAGE_END);
+		mainGeneralPage.add(topPanel, BorderLayout.PAGE_START);
+		mainGeneralPage.add(bottomPanel, BorderLayout.PAGE_END);
 
 		
 	}
@@ -461,32 +464,32 @@ public class main implements ActionListener {
 
 	private static void paymentPage() {
 		
-		mainPanel3 = new JPanel();
-		mainPanel3.setVisible(false);
-		mainPanel3.setLayout(new BoxLayout(mainPanel3, BoxLayout.PAGE_AXIS));
-		Frame.getContentPane().add(mainPanel3);
+		paymentGeneralPage = new JPanel();
+		paymentGeneralPage.setVisible(false);
+		paymentGeneralPage.setLayout(new BoxLayout(paymentGeneralPage, BoxLayout.PAGE_AXIS));
+		Frame.getContentPane().add(paymentGeneralPage);
 		
-		mainPanel3.add(Box.createVerticalStrut(10)); // spacer
+		paymentGeneralPage.add(Box.createVerticalStrut(10)); // spacer
 		
 		payBack = new JButton("Back");
 		payBack.setAlignmentX(Component.CENTER_ALIGNMENT);
 		payBack.addActionListener(new main());
-		mainPanel3.add(payBack);
+		paymentGeneralPage.add(payBack);
 		
-		mainPanel3.add(Box.createVerticalStrut(20)); // spacer
+		paymentGeneralPage.add(Box.createVerticalStrut(20)); // spacer
 		
 		int cost = currentuser.getParkingRate();
 		costLabel = new JLabel("You will be charged: $" + cost + "\n");
 		costLabel.setFont(new Font("", Font.PLAIN, 30));
 		costLabel.setForeground(Color.red);
 		costLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-		mainPanel3.add(costLabel);
+		paymentGeneralPage.add(costLabel);
 		
-		mainPanel3.add(Box.createVerticalStrut(50)); // spacer
+		paymentGeneralPage.add(Box.createVerticalStrut(50)); // spacer
 		
 		JLabel label = new JLabel("Insert Payment Information:");
 		label.setAlignmentX(Component.CENTER_ALIGNMENT);
-		mainPanel3.add(label);
+		paymentGeneralPage.add(label);
 		
 		ptypesPanel = new JPanel();
 		ptypesPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
@@ -580,12 +583,36 @@ public class main implements ActionListener {
 		paysuccess.setAlignmentX(Component.CENTER_ALIGNMENT);
 		paymentPanel.add(paysuccess);
 		
-		mainPanel3.add(ptypesPanel, BorderLayout.PAGE_START);
-		mainPanel3.add(paymentPanel, BorderLayout.PAGE_END);
+		paymentGeneralPage.add(ptypesPanel, BorderLayout.PAGE_START);
+		paymentGeneralPage.add(paymentPanel, BorderLayout.PAGE_END);
 		
 	}
 	
 	private static void confirmedBookingPage() {
+		
+		confirmationGeneralPage = new JPanel();
+		confirmationGeneralPage.setVisible(false);
+		confirmationGeneralPage.setLayout(new BoxLayout(confirmationGeneralPage, BoxLayout.PAGE_AXIS));
+		Frame.getContentPane().add(confirmationGeneralPage);
+
+		confirmPanel = new JPanel();
+		confirmPanel.setBorder(new EmptyBorder(100, 10, 10, 10));
+		confirmPanel.setLayout(new BoxLayout(confirmPanel, BoxLayout.PAGE_AXIS));
+
+		// Username/Email
+		confirmLabel = new JLabel("You have successfully booked this Parking Space.");
+		confirmLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+		confirmPanel.add(confirmLabel);
+
+		confirmPanel.add(Box.createVerticalStrut(10)); // spacer
+		
+		// Register Button
+		confirm = new JButton("Return To Main Screen");
+		confirm.setAlignmentX(Component.CENTER_ALIGNMENT);
+		confirm.addActionListener(new main());
+		confirmPanel.add(confirm);
+		
+		confirmationGeneralPage.add(confirmPanel, BorderLayout.PAGE_START);
 		
 	}
 	
@@ -602,7 +629,6 @@ public class main implements ActionListener {
 
 				// Set to current user
 				for(int j = 0; j < userList.getList().size(); j++) {
-					
 					if (userList.getList().get(j).getEmail().equals(username) && userList.getList().get(j).getPassword().equals(password)) {
 						this.currentuser = userList.getList().get(j);
 					}
@@ -631,11 +657,11 @@ public class main implements ActionListener {
 					success.setForeground(new Color(0, 153, 0));
 					System.out.println("Successful Login");
 
-					mainPanel0.setVisible(false);
+					loginGeneralPanel.setVisible(false);
 					
 					mainPage();
-					Frame.add(mainPanel2);
-					mainPanel2.setVisible(true);
+					Frame.add(mainGeneralPage);
+					mainGeneralPage.setVisible(true);
 
 				} else {
 					success.setForeground(Color.red);
@@ -653,11 +679,11 @@ public class main implements ActionListener {
 			
 			System.out.println("Register new user");
 			
-			mainPanel0.setVisible(false);
+			loginGeneralPanel.setVisible(false);
 			
 			registerPage();
-			Frame.add(mainPanel1);
-			mainPanel1.setVisible(true);
+			Frame.add(registerGeneralPanel);
+			registerGeneralPanel.setVisible(true);
 			
 		}
 		
@@ -669,10 +695,10 @@ public class main implements ActionListener {
 			
 			System.out.println("Back to login page");
 			
-			mainPanel1.setVisible(false);
+			registerGeneralPanel.setVisible(false);
 			
 			loginPage();
-			mainPanel0.setVisible(true);
+			loginGeneralPanel.setVisible(true);
 			
 			
 		}
@@ -717,10 +743,10 @@ public class main implements ActionListener {
 				
 				System.out.println("Registering user: [type: " + type + ", first name: " + fname + ", last name: "+ lname + ", email: " + email + ", password: " + password + "]");
 				
-				mainPanel1.setVisible(false);
+				registerGeneralPanel.setVisible(false);
 				
 				loginPage();
-				mainPanel0.setVisible(true);
+				loginGeneralPanel.setVisible(true);
 				
 			}
 
@@ -736,10 +762,10 @@ public class main implements ActionListener {
 			userText = null;
 			passwordText = null;
 			
-			mainPanel2.setVisible(false);
+			mainGeneralPage.setVisible(false);
 			
 			loginPage();
-			mainPanel0.setVisible(true);
+			loginGeneralPanel.setVisible(true);
 			
 		}
 		
@@ -771,11 +797,11 @@ public class main implements ActionListener {
 
 			System.out.println("User chose: parking spot " + value);
 		
-			mainPanel2.setVisible(false);
+			mainGeneralPage.setVisible(false);
 			
 			paymentPage();
-			Frame.add(mainPanel3);
-			mainPanel3.setVisible(true);
+			Frame.add(paymentGeneralPage);
+			paymentGeneralPage.setVisible(true);
 			
 			System.out.println("On payment page");
 
@@ -795,10 +821,10 @@ public class main implements ActionListener {
 			
 			System.out.println("Back to main page");
 			
-			mainPanel3.setVisible(false);
+			paymentGeneralPage.setVisible(false);
 			
-			paymentPage();
-			mainPanel2.setVisible(true);
+			mainPage();
+			mainGeneralPage.setVisible(true);
 			
 		}
 		
@@ -854,7 +880,11 @@ public class main implements ActionListener {
 						boolean success = context.execute(paymentinfo, this.currentuser.getParkingRate());
 						if(success) {
 							
-							System.out.println("gong");
+							paymentGeneralPage.setVisible(false);
+							
+							confirmedBookingPage();
+							Frame.add(confirmationGeneralPage);
+							confirmationGeneralPage.setVisible(true);
 							
 						}else {
 							paysuccess.setForeground(Color.red);
@@ -878,6 +908,19 @@ public class main implements ActionListener {
 		
 	}
 	
+	public void confirmActions(ActionEvent e) {
+		
+		if(e.getSource() == confirm) {
+			
+			confirmationGeneralPage.setVisible(false);
+			
+			mainPage();
+			mainGeneralPage.setVisible(true);
+			
+		}
+		
+	}
+	
 	@Override
 	public void actionPerformed(ActionEvent e) {
 
@@ -892,6 +935,8 @@ public class main implements ActionListener {
 		mainActions(e);
 		
 		paymentActions(e);
+		
+		confirmActions(e);
 
 	}
 

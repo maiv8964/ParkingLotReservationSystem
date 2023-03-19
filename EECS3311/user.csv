@@ -1,6 +1,6 @@
-first,last,id,email,password,type
-student,student,2,student@yorku.ca,student,student
-visitor,visitor,3,visitor@yorku.ca,visitor,visitor
-faculty,faculty,4,faculty@yorku.ca,faculty,faculty
-test,test,5,test,test,faculty
-qwer,qwer,6,qwer,qwer,non-faculty
+first,last,id,email,password,type,validation
+student,student,1,student@yorku.ca,student,student,TRUE
+visitor,visitor,2,visitor@yorku.ca,visitor,visitor,TRUE
+faculty,faculty,3,faculty@yorku.ca,faculty,faculty,TRUE
+test,test,4,test,test,faculty,TRUE
+qwer,qwer,5,qwer,qwer,visitor,TRUE

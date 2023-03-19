@@ -7,6 +7,7 @@ public class User {
 	public String email;
 	public String password;
 	public String type;
+	public boolean isValidated;
 	
 	public User(String fname, String lname, int id, String email, String password, String type) {
 		super();
@@ -16,12 +17,18 @@ public class User {
 		this.email = email;
 		this.password = password;
 		this.type = type;
+		System.out.println(this.type);
+		if(type.equals("visitor")) {
+			this.isValidated = true;
+		}else {
+			this.isValidated = false;
+		}
+		
 	}
 	
 	public User(){
 		super();
 	}
-	
 
 	public String getFName() {
 		return fname;
@@ -59,18 +66,42 @@ public class User {
 	public void setPassword(String password) {
 		this.password = password;
 	}
-
-	@Override
-	public String toString() {
-		return "User [name=" + fname + " " + lname + ", id=" + id + ", email=" + email + ", password=" + password + "]";
-	}
-
+	
 	public void setType(String type) {
 		this.type = type;
 	}
 	
 	public String getType() {
 		return this.type;
+	}
+
+	public void setValidation(String valid) {
+		
+		if(valid.equals("TRUE")) {
+
+			this.isValidated = true;
+			
+		}else {
+
+			this.isValidated = false;
+			
+		}
+		
+	}
+	
+	public String getValidation() {
+		
+		if(this.isValidated) {
+			return "TRUE";
+		}else {
+			return "FALSE";
+		}
+		
+	}
+
+	@Override
+	public String toString() {
+		return "User [name=" + fname + " " + lname + ", id=" + id + ", email=" + email + ", password=" + password + "]";
 	}
 	
 }

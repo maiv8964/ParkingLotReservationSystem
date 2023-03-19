@@ -18,27 +18,27 @@ public abstract class UserInfo{
 		this.username=username;
 		this.password=password;
 	}
+	
+	public abstract int getParkingRate();
+	
 	//need further implementation
 	public void bookParking() {
 		//communicate with Reservation system !?
 	}
 	
-	public boolean getIsValidated() {
-		return this.isValidated;
+	public void setValid() {
+		this.isValidated = true;
 	}
 	
-	public abstract int getParkingRate();
+	public boolean getIsValid() {
+		return this.isValidated;
+	}
 	
 	public String getEmail() {
 		return this.username;
 	}
 	public String getPassword() {
 		return this.password;
-	}
-	
-	
-	public void setValid() {
-		this.isValidated = true;
 	}
 	
 	public void setPaymentInfo(PaymentInfo payment) {

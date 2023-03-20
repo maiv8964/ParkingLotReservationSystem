@@ -1,5 +1,6 @@
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+import java.time.LocalDate;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -58,6 +59,7 @@ public class main implements ActionListener {
 	private static JButton mainBack;
 	private static JPanel mainGeneralPage;
 	private static JPanel topPanel;
+	private static JPanel datePanel;
 	private static JPanel bottomPanel;
 	private static JComboBox lots;
 	private static JButton[] parkingspot = new JButton[101]; // parkingspot[0] isn't used to start from 1-100 spots
@@ -287,7 +289,7 @@ public class main implements ActionListener {
 	}
 	
 	// add feature to update lots when choosing a new lot, button to view current reservations
-	// admin ppl would have a button to enable/disable parkign lots, validate users
+	// admin ppl would have a button to enable/disable parking lots, validate users
 	// supermanager can create managers here
 	private static void mainPage() {
 		
@@ -306,32 +308,41 @@ public class main implements ActionListener {
 		// Top part of screen
 		topPanel = new JPanel();
 		topPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
-		topPanel.setBounds(0, 0, 500, 100);
 		topPanel.setLayout(new BoxLayout(topPanel, BoxLayout.PAGE_AXIS));
 
-		JLabel label = new JLabel("Main Page");
+		JLabel label = new JLabel("Select Parking Lot, Time, and Parking Spot:");
 		label.setAlignmentX(Component.CENTER_ALIGNMENT);
 		topPanel.add(label);
-		JLabel label1 = new JLabel("Select Parking Lot and Spot:");
-		label1.setAlignmentX(Component.CENTER_ALIGNMENT);
-		topPanel.add(label1);
 
+		topPanel.add(Box.createVerticalStrut(10)); // spacer
+		
 		String[] parkingLots = { "Lot1", "Lot2", "Lot3" }; // change this to only show enabled lots
 		lots = new JComboBox(parkingLots);
 		lots.setSelectedIndex(0);
 		lots.setMaximumSize(new Dimension(150, 25));
 		lots.addActionListener(new main());
 		topPanel.add(lots);
+	
+	    
+		datePanel = new JPanel(new FlowLayout());
+		datePanel.setMaximumSize(new Dimension(800, 25));
+		datePanel.setBorder(new EmptyBorder(10, 10, 10, 10));
+		
+		LocalDate currentdate = LocalDate.now();
+	    JLabel another = new JLabel(currentdate.toString());
+	    another.setAlignmentX(Component.CENTER_ALIGNMENT);
+	    datePanel.add(another);
+	    
 
 		// Bottom part of screen
 		bottomPanel = new JPanel(new GridLayout(0, 10, 10, 10));
 		bottomPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
-		bottomPanel.setBounds(0, 300, 600, 100);
 		bottomPanel.setBackground(Color.gray);
 
 		loadSpots();
 
 		mainGeneralPage.add(topPanel, BorderLayout.PAGE_START);
+		mainGeneralPage.add(datePanel, BorderLayout.PAGE_START);
 		mainGeneralPage.add(bottomPanel, BorderLayout.PAGE_END);
 
 		
@@ -624,8 +635,6 @@ public class main implements ActionListener {
 			// User exists
 			if (maintain.users.get(i).getEmail().equals(username)
 					&& maintain.users.get(i).getPassword().equals(password)) {
-				
-				System.out.println("Logged in user is type: " + maintain.users.get(i).getType());
 
 				// Set to current user
 				for(int j = 0; j < userList.getList().size(); j++) {

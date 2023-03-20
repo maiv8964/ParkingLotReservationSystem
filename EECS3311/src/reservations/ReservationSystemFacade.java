@@ -6,20 +6,20 @@ import parking.*;
 import paymentStrategy.*;
 import users.*;
 
-public class ReservationSystem {
+public class ReservationSystemFacade {
 	
-	private static ReservationSystem instance = null;
+	private static ReservationSystemFacade instance = null;
 	private ParkingSystem parkingSystem = null;
 	
 	// Retrieve singleton object of ReservationSystem
-	public static ReservationSystem getInstance() {
+	public static ReservationSystemFacade getInstance() {
 		if(instance == null) {
-			instance = new ReservationSystem();
+			instance = new ReservationSystemFacade();
 		}
 		return instance;
 	}
 	
-	private ReservationSystem(){//Singleton constructor
+	private ReservationSystemFacade(){//Singleton constructor
 		this.parkingSystem = ParkingSystem.getInstance();
 	}
 	

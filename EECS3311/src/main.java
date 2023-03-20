@@ -17,11 +17,16 @@ import users.*;
 public class main implements ActionListener {
 
 	private static JFrame Frame;
-	private static MaintainUser maintain = new MaintainUser();
-	private static String path = "user.csv";
+	private static MaintainUser maintainusers = new MaintainUser();
+	private static String path1 = "user.csv";
+	
+	private static MaintainUser maintainmanagement = new MaintainUser();
+	private static String path2 = "management.csv";
 	private static UserInfo currentuser = null;
 	private static UserList userList; // keeps track of all created accounts
-	
+	private static boolean managerLoggedIn = false;
+	private static boolean superManagerLoggedIn = false;
+	private static SuperManager supermanager;
 
 	// Login Page
 	private static JPanel loginGeneralPanel;
@@ -57,12 +62,25 @@ public class main implements ActionListener {
 	
 	// Main Page
 	private static JButton mainBack;
+	private static JButton bookings;
+	private static JButton manage;
 	private static JPanel mainGeneralPage;
+	private static JPanel mainGeneralManagementPage;
+	private static JPanel navPanel;
+	private static JPanel navManagementPanel;
 	private static JPanel topPanel;
+	private static JPanel licencePanel;
 	private static JPanel datePanel;
 	private static JPanel bottomPanel;
 	private static JComboBox lots;
+	private static JComboBox month;
+	private static JComboBox day;
+	private static JComboBox time;
 	private static JButton[] parkingspot = new JButton[101]; // parkingspot[0] isn't used to start from 1-100 spots
+	private static JLabel plateLabel;
+	private static JTextField plateText;
+	private static JLabel licencesuccess;
+	private static JButton createManager;
 	
 	// Payment Page
 	private static JButton payBack;
@@ -102,12 +120,13 @@ public class main implements ActionListener {
 		Frame.setSize(800, 800);
 		
 		userList = new UserList();
-		maintain.load(path);
+		maintainusers.load(path1);
+		maintainmanagement.load(path2);
 		
 		// Add already created users into the userList
-		ArrayList<User> users = maintain.users;
+		ArrayList<User> users = maintainusers.users;
 		
-		for(int i = 0; i < maintain.users.size(); i++) {
+		for(int i = 0; i < maintainusers.users.size(); i++) {
 			
 			String email = users.get(i).getEmail();
 			String password = users.get(i).getPassword();
@@ -151,6 +170,8 @@ public class main implements ActionListener {
 		userText.setMaximumSize(new Dimension(150, 25));
 		loginPanel.add(userText);
 
+		loginPanel.add(Box.createVerticalStrut(10)); // spacer
+		
 		// Password
 		passwordlabel = new JLabel("Password");
 		passwordlabel.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -292,6 +313,67 @@ public class main implements ActionListener {
 	// admin ppl would have a button to enable/disable parking lots, validate users
 	// supermanager can create managers here
 	private static void mainPage() {
+
+		if(managerLoggedIn || superManagerLoggedIn) {
+			mainManagementPage();
+			Frame.add(mainGeneralManagementPage);
+			mainGeneralManagementPage.setVisible(true);
+		}else {
+			mainClientPage();
+			Frame.add(mainGeneralPage);
+			mainGeneralPage.setVisible(true);
+		}
+		
+	}
+	
+	private static void mainManagementPage() {
+		
+		mainGeneralManagementPage = new JPanel();
+		mainGeneralManagementPage.setVisible(false);
+		mainGeneralManagementPage.setLayout(new BoxLayout(mainGeneralManagementPage, BoxLayout.PAGE_AXIS));
+		Frame.getContentPane().add(mainGeneralManagementPage);
+		
+		mainGeneralManagementPage.add(Box.createVerticalStrut(10)); // spacer
+		
+		// Buttons at top of screen
+		navManagementPanel = new JPanel(new FlowLayout());
+		
+		mainBack = new JButton("Logout");
+		mainBack.addActionListener(new main());
+		navManagementPanel.add(mainBack);
+		
+		manage = new JButton("Manage System and Users");
+		manage.addActionListener(new main());
+		navManagementPanel.add(manage);
+		
+		if(superManagerLoggedIn) {
+			createManager = new JButton("Create New Manager Account");
+			createManager.addActionListener(new main());
+			navManagementPanel.add(createManager);
+		}
+		
+		
+		// Top part of screen
+		topPanel = new JPanel();
+		topPanel.setBorder(new EmptyBorder(0, 10, 10, 10));
+		topPanel.setLayout(new BoxLayout(topPanel, BoxLayout.PAGE_AXIS));
+
+		topPanel.add(Box.createVerticalStrut(10)); // spacer
+		
+		String[] parkingLots = { "Lot1", "Lot2", "Lot3" }; // change this to only show enabled lots
+		lots = new JComboBox(parkingLots);
+		lots.setSelectedIndex(0);
+		lots.setMaximumSize(new Dimension(150, 25));
+		lots.addActionListener(new main());
+		topPanel.add(lots);
+
+
+		mainGeneralManagementPage.add(navManagementPanel, BorderLayout.PAGE_START);
+		mainGeneralManagementPage.add(topPanel, BorderLayout.PAGE_START);
+		
+	}
+	
+	private static void mainClientPage() {
 		
 		mainGeneralPage = new JPanel();
 		mainGeneralPage.setVisible(false);
@@ -300,14 +382,25 @@ public class main implements ActionListener {
 		
 		mainGeneralPage.add(Box.createVerticalStrut(10)); // spacer
 		
+		// Buttons at top of screen
+		navPanel = new JPanel(new FlowLayout());
+		
+		bookings = new JButton("View/Edit Current Booking");
+		bookings.addActionListener(new main());
+		navPanel.add(bookings);
+		
 		mainBack = new JButton("Logout");
-		mainBack.setAlignmentX(Component.CENTER_ALIGNMENT);
 		mainBack.addActionListener(new main());
-		mainGeneralPage.add(mainBack);
-
+		navPanel.add(mainBack);
+		
+		manage = new JButton("Manage System and Users");
+		manage.addActionListener(new main());
+		navPanel.add(manage);
+		
+		
 		// Top part of screen
 		topPanel = new JPanel();
-		topPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
+		topPanel.setBorder(new EmptyBorder(0, 10, 10, 10));
 		topPanel.setLayout(new BoxLayout(topPanel, BoxLayout.PAGE_AXIS));
 
 		JLabel label = new JLabel("Select Parking Lot, Time, and Parking Spot:");
@@ -323,16 +416,52 @@ public class main implements ActionListener {
 		lots.addActionListener(new main());
 		topPanel.add(lots);
 	
-	    
+		// Licence plate
+		licencePanel = new JPanel(new FlowLayout());
+		plateLabel = new JLabel("Licence Plate:");
+		licencePanel.add(plateLabel);
+		plateText = new JTextField(10);
+		licencePanel.add(plateText);
+	
+	    // Select date
 		datePanel = new JPanel(new FlowLayout());
-		datePanel.setMaximumSize(new Dimension(800, 25));
-		datePanel.setBorder(new EmptyBorder(10, 10, 10, 10));
-		
-		LocalDate currentdate = LocalDate.now();
-	    JLabel another = new JLabel(currentdate.toString());
-	    another.setAlignmentX(Component.CENTER_ALIGNMENT);
-	    datePanel.add(another);
 	    
+		String[] months = { "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December" };
+		JLabel selectMonth = new JLabel("Month:");
+		datePanel.add(selectMonth);
+		month = new JComboBox(months);
+		month.setSelectedIndex(0);
+		month.setMaximumSize(new Dimension(150, 25));
+		month.addActionListener(new main());
+		datePanel.add(month);
+		
+		datePanel.add(Box.createHorizontalStrut(10)); // spacer
+		
+		String[] days = { "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30", "31"};
+		JLabel selectDay = new JLabel("Day:");
+		datePanel.add(selectDay);
+		day = new JComboBox(days);
+		day.setSelectedIndex(0);
+		day.setMaximumSize(new Dimension(150, 25));
+		day.addActionListener(new main());
+
+		datePanel.add(day);
+		
+		datePanel.add(Box.createHorizontalStrut(10)); // spacer
+		
+		String[] times = { "00:00", "01:00", "02:00", "03:00", "04:00", "05:00", "06:00", "07:00", "08:00", "09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00", "21:00", "22:00", "23:00"};
+		JLabel selectTime = new JLabel("Starting Time (1 Hour Duration Initially):");
+		datePanel.add(selectTime);
+		time = new JComboBox(times);
+		time.setSelectedIndex(0);
+		time.setMaximumSize(new Dimension(150, 25));
+		time.addActionListener(new main());
+		datePanel.add(time);
+		
+		// Success message
+		licencesuccess = new JLabel("");
+		licencesuccess.setAlignmentX(Component.CENTER_ALIGNMENT);
+		datePanel.add(licencesuccess);
 
 		// Bottom part of screen
 		bottomPanel = new JPanel(new GridLayout(0, 10, 10, 10));
@@ -341,10 +470,11 @@ public class main implements ActionListener {
 
 		loadSpots();
 
+		mainGeneralPage.add(navPanel, BorderLayout.PAGE_START);
 		mainGeneralPage.add(topPanel, BorderLayout.PAGE_START);
+		mainGeneralPage.add(licencePanel, BorderLayout.PAGE_START);
 		mainGeneralPage.add(datePanel, BorderLayout.PAGE_START);
 		mainGeneralPage.add(bottomPanel, BorderLayout.PAGE_END);
-
 		
 	}
 	
@@ -631,11 +761,37 @@ public class main implements ActionListener {
 
 		ClassLoader classLoader = getClass().getClassLoader();
 
-		for (int i = 0; i < maintain.users.size(); i++) {
+		for (int i = 0; i < maintainmanagement.users.size(); i++) {
 			// User exists
-			if (maintain.users.get(i).getEmail().equals(username)
-					&& maintain.users.get(i).getPassword().equals(password)) {
+			if (maintainmanagement.users.get(i).getEmail().equals(username)
+					&& maintainmanagement.users.get(i).getPassword().equals(password)) {
+				
+					if(maintainmanagement.users.get(i).getType().equals("super")) {
+						
+						supermanager = SuperManager.getInstance();
+						System.out.println("Super Manager has logged in");
+						managerLoggedIn = true;
+						superManagerLoggedIn = true;
+						
+					}else {
+						
+						managerLoggedIn = true;
+						System.out.println("Manager has logged");
+						
+					}
+					
+				return true;
+			}
 
+		}
+		
+		for (int i = 0; i < maintainusers.users.size(); i++) {
+			// User exists
+			if (maintainusers.users.get(i).getEmail().equals(username)
+					&& maintainusers.users.get(i).getPassword().equals(password)) {
+
+				System.out.println("Logged in user is type: " + maintainusers.users.get(i).getType());
+				
 				// Set to current user
 				for(int j = 0; j < userList.getList().size(); j++) {
 					if (userList.getList().get(j).getEmail().equals(username) && userList.getList().get(j).getPassword().equals(password)) {
@@ -669,8 +825,6 @@ public class main implements ActionListener {
 					loginGeneralPanel.setVisible(false);
 					
 					mainPage();
-					Frame.add(mainGeneralPage);
-					mainGeneralPage.setVisible(true);
 
 				} else {
 					success.setForeground(Color.red);
@@ -742,9 +896,9 @@ public class main implements ActionListener {
 			}else {
 				
 				// Adds to user.csv
-				User newuser = new User(fname, lname, maintain.users.size() + 1, email, password, type);
-				maintain.users.add(newuser);
-				maintain.update(path);
+				User newuser = new User(fname, lname, maintainusers.users.size() + 1, email, password, type);
+				maintainusers.users.add(newuser);
+				maintainusers.update(path1);
 				
 				// Adds to userlist
 				addToUserList(email, password, type);
@@ -763,7 +917,41 @@ public class main implements ActionListener {
 		
 	}
 
-	public void mainActions(ActionEvent e) {
+	public void mainActions(ActionEvent e) throws Exception {
+		
+		// Admin controls
+		if(e.getSource() == createManager) {
+			
+			JFrame newManagerPanel = new JFrame();
+			Manager manager = supermanager.autoGenerator();
+			newManagerPanel.setResizable(false);
+			newManagerPanel.setDefaultCloseOperation(newManagerPanel.DISPOSE_ON_CLOSE);
+			newManagerPanel.setSize(400, 150);
+			newManagerPanel.setVisible(true);
+			
+			
+			JPanel info = new JPanel();
+			info.setLayout(new BoxLayout(info, BoxLayout.PAGE_AXIS));
+			
+			info.add(Box.createVerticalStrut(20)); // spacer
+			JLabel label = new JLabel("New Manager Account:");
+			label.setAlignmentX(Component.CENTER_ALIGNMENT);
+			info.add(label);
+			info.add(Box.createVerticalStrut(10)); // spacer
+			JLabel user = new JLabel("Username: " + manager.getUsername());
+			user.setAlignmentX(Component.CENTER_ALIGNMENT);
+			info.add(user);
+			info.add(Box.createVerticalStrut(10)); // spacer
+			JLabel pass = new JLabel("Password: " + manager.getPassword());
+			pass.setAlignmentX(Component.CENTER_ALIGNMENT);
+			info.add(pass);
+			
+			newManagerPanel.add(info, BorderLayout.PAGE_START);
+			User manageruser = new User("manager", "manager", maintainmanagement.users.size() + 1, manager.getUsername(), manager.getPassword(), "manager");
+			maintainmanagement.users.add(manageruser);
+			maintainmanagement.update(path2);
+			
+		}
 		
 		if(e.getSource() == mainBack) {
 			
@@ -771,20 +959,72 @@ public class main implements ActionListener {
 			userText = null;
 			passwordText = null;
 			
-			mainGeneralPage.setVisible(false);
+			if(managerLoggedIn || superManagerLoggedIn) {
+				mainGeneralManagementPage.setVisible(false);
+				managerLoggedIn = false;
+				superManagerLoggedIn = false;
+			}else {
+				mainGeneralPage.setVisible(false);
+			}
 			
 			loginPage();
 			loginGeneralPanel.setVisible(true);
 			
 		}
+
+		String lotValue = "";
+		JComboBox lotlist = null;
+		
+		// Checks if the lot was changed
+		if (e.getSource() == lots) {
+			
+			lotlist = (JComboBox) e.getSource();
+			lotValue = (String) lotlist.getSelectedItem();
+			System.out.println(lotValue + " chosen");
+			
+		}
+		
+		String monthValue = "";
+		JComboBox monthlist = null;
+		
+		// Checks if the lot was changed
+		if (e.getSource() == month) {
+			
+			monthlist = (JComboBox) e.getSource();
+			monthValue = (String) monthlist.getSelectedItem();
+			System.out.println(monthValue + " chosen");
+			
+		}
+		
+		String dayValue = "";
+		JComboBox daylist = null;
+		
+		// Checks if the lot was changed
+		if (e.getSource() == day) {
+			
+			daylist = (JComboBox) e.getSource();
+			dayValue = (String) day.getSelectedItem();
+			System.out.println(dayValue + " chosen");
+			
+		}
+		
+		String timeValue = "";
+		JComboBox timelist = null;
+		
+		// Checks if the lot was changed
+		if (e.getSource() == time) {
+			
+			timelist = (JComboBox) e.getSource();
+			timeValue = (String) timelist.getSelectedItem();
+			System.out.println(timeValue + " chosen");
+			
+		}
 		
 		int value = -1;
 		JButton button = null;
-		JComboBox lotlist = null;
-		String lotValue = "";
 		Object object = e.getSource();
-
-		// Checks if a parking spot is chosen
+		
+		// Checks if a parking spot number is chosen
 		if (object instanceof JButton) {
 			
 			try {
@@ -793,32 +1033,30 @@ public class main implements ActionListener {
 			} catch (NumberFormatException a) {}
 			
 		}
-
-		// Checks if the lot was changed
-		if (object instanceof JComboBox) {
-
-			lotlist = (JComboBox) e.getSource();
-			lotValue = (String) lotlist.getSelectedItem();
-
-		}
 		
 		if (value >= 0 && value <= 100) { // Choose a parking spot
 
-			System.out.println("User chose: parking spot " + value);
-		
-			mainGeneralPage.setVisible(false);
-			
-			paymentPage();
-			Frame.add(paymentGeneralPage);
-			paymentGeneralPage.setVisible(true);
-			
-			System.out.println("On payment page");
-
-		}
-		
-		if (!(lotValue.equals(""))) { // Choose a lot
-
-			System.out.println(lotValue + " chosen");
+			String licenceplate = plateText.getText();
+	
+			if(licenceplate.equals("")) {
+				
+				licencesuccess.setForeground(Color.red);
+				licencesuccess.setText("Please fill in all the fields correctly");
+				System.out.println("Failed Payment");
+				
+			}else {
+				
+				System.out.println("User chose: parking spot " + value);
+				
+				mainGeneralPage.setVisible(false);
+				
+				paymentPage();
+				Frame.add(paymentGeneralPage);
+				paymentGeneralPage.setVisible(true);
+				
+				System.out.println("On payment page");
+				
+			}
 
 		}
 		
@@ -833,7 +1071,6 @@ public class main implements ActionListener {
 			paymentGeneralPage.setVisible(false);
 			
 			mainPage();
-			mainGeneralPage.setVisible(true);
 			
 		}
 		
@@ -924,7 +1161,6 @@ public class main implements ActionListener {
 			confirmationGeneralPage.setVisible(false);
 			
 			mainPage();
-			mainGeneralPage.setVisible(true);
 			
 		}
 		
@@ -941,7 +1177,12 @@ public class main implements ActionListener {
 			e1.printStackTrace();
 		}
 		
-		mainActions(e);
+		try {
+			mainActions(e);
+		} catch (Exception e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 		
 		paymentActions(e);
 		

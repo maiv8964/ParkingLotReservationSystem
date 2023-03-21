@@ -9,7 +9,9 @@ public class ParkingSystem {
 	
 	private ParkingSystem() {
 		this.lots = new HashMap<Integer,ParkingLot>();
-		this.lots.put(1, new ParkingLot(1, "Lot 1")); // initialize with 1 parking lot
+		ParkingLot lot = new ParkingLot(1, "Lot 1");
+		lot.setEnabled(true);
+		this.lots.put(1, lot); // initialize with 1 parking lot
 	}
 	
 	public static ParkingSystem getInstance() {

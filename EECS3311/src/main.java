@@ -6,6 +6,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.Map;
 
 import paymentStrategy.*;
 import manager.*;
@@ -22,6 +23,9 @@ public class main implements ActionListener {
 	
 	private static MaintainUser maintainmanagement = new MaintainUser();
 	private static String path2 = "management.csv";
+	
+	private static ParkingSystem psystem;
+	
 	private static UserInfo currentuser = null;
 	private static UserList userList; // keeps track of all created accounts
 	private static boolean managerLoggedIn = false;
@@ -66,6 +70,7 @@ public class main implements ActionListener {
 	private static JButton manage;
 	private static JPanel mainGeneralPage;
 	private static JPanel mainGeneralManagementPage;
+	private static JPanel topManagementPanel;
 	private static JPanel navPanel;
 	private static JPanel navManagementPanel;
 	private static JPanel topPanel;
@@ -81,6 +86,10 @@ public class main implements ActionListener {
 	private static JTextField plateText;
 	private static JLabel licencesuccess;
 	private static JButton createManager;
+	private static JButton addLot;
+	private static JButton setLotVisible;
+	private static String lotVisible;
+	private static int selectedLotIndex;
 	
 	// Payment Page
 	private static JButton payBack;
@@ -106,6 +115,7 @@ public class main implements ActionListener {
 	private static JButton pay;
 	private static JLabel paysuccess;
 	
+	
 	// Booking Confirmation Page
 	private static JPanel confirmationGeneralPage;
 	private static JPanel confirmPanel;
@@ -123,6 +133,9 @@ public class main implements ActionListener {
 		maintainusers.load(path1);
 		maintainmanagement.load(path2);
 		
+		psystem = ParkingSystem.getInstance();
+		lotVisible = "Disable";
+		selectedLotIndex = 0;
 		// Add already created users into the userList
 		ArrayList<User> users = maintainusers.users;
 		
@@ -326,7 +339,7 @@ public class main implements ActionListener {
 		
 	}
 	
-	private static void mainManagementPage() {
+	private static void mainManagementPage() {		
 		
 		mainGeneralManagementPage = new JPanel();
 		mainGeneralManagementPage.setVisible(false);
@@ -338,13 +351,13 @@ public class main implements ActionListener {
 		// Buttons at top of screen
 		navManagementPanel = new JPanel(new FlowLayout());
 		
+		manage = new JButton("Validate Users");
+		manage.addActionListener(new main());
+		navManagementPanel.add(manage);
+		
 		mainBack = new JButton("Logout");
 		mainBack.addActionListener(new main());
 		navManagementPanel.add(mainBack);
-		
-		manage = new JButton("Manage System and Users");
-		manage.addActionListener(new main());
-		navManagementPanel.add(manage);
 		
 		if(superManagerLoggedIn) {
 			createManager = new JButton("Create New Manager Account");
@@ -352,24 +365,60 @@ public class main implements ActionListener {
 			navManagementPanel.add(createManager);
 		}
 		
+		navManagementPanel.setBackground(Color.gray);
 		
 		// Top part of screen
-		topPanel = new JPanel();
-		topPanel.setBorder(new EmptyBorder(0, 10, 10, 10));
-		topPanel.setLayout(new BoxLayout(topPanel, BoxLayout.PAGE_AXIS));
-
-		topPanel.add(Box.createVerticalStrut(10)); // spacer
+		topManagementPanel = new JPanel();
+		topManagementPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
+		topManagementPanel.setLayout(new BoxLayout(topManagementPanel, BoxLayout.PAGE_AXIS));
 		
-		String[] parkingLots = { "Lot1", "Lot2", "Lot3" }; // change this to only show enabled lots
+		addLot = new JButton("Add Lot");
+		addLot.addActionListener(new main());
+		addLot.setAlignmentX(Component.CENTER_ALIGNMENT);
+		topManagementPanel.add(addLot);
+		
+		topManagementPanel.add(Box.createVerticalStrut(10)); // spacer
+		
+		
+		int numLots = psystem.getLots().size();
+		String[] parkingLots = new String[numLots];
+		int i = 0;
+		Map<Integer, ParkingLot> lotlist = psystem.getLots();
+		
+		for (ParkingLot lot : lotlist.values()) {
+			
+			parkingLots[i] = lot.getAddress();
+			i++;
+			
+		}
+		
 		lots = new JComboBox(parkingLots);
-		lots.setSelectedIndex(0);
+		lots.setSelectedIndex(selectedLotIndex);
 		lots.setMaximumSize(new Dimension(150, 25));
 		lots.addActionListener(new main());
-		topPanel.add(lots);
+		topManagementPanel.add(lots);
+		
+		topManagementPanel.add(Box.createVerticalStrut(10)); // spacer
+		
+		// Enable/Disable Lot
+		setLotVisible = new JButton(lotVisible);
+		setLotVisible.addActionListener(new main());
+		setLotVisible.setAlignmentX(Component.CENTER_ALIGNMENT);
+		topManagementPanel.add(setLotVisible);
+		
+		//topManagementPanel.add(Box.createVerticalStrut(750)); // spacer
+		topManagementPanel.setBackground(Color.DARK_GRAY);
+		
+		// Bottom part of screen
+		bottomPanel = new JPanel(new GridLayout(0, 10, 10, 10));
+		bottomPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
+		bottomPanel.setBackground(Color.gray);
 
-
+		loadSpots();
+		
 		mainGeneralManagementPage.add(navManagementPanel, BorderLayout.PAGE_START);
-		mainGeneralManagementPage.add(topPanel, BorderLayout.PAGE_START);
+		mainGeneralManagementPage.add(topManagementPanel, BorderLayout.PAGE_START);
+		mainGeneralManagementPage.add(bottomPanel, BorderLayout.PAGE_END);
 		
 	}
 	
@@ -409,9 +458,20 @@ public class main implements ActionListener {
 
 		topPanel.add(Box.createVerticalStrut(10)); // spacer
 		
-		String[] parkingLots = { "Lot1", "Lot2", "Lot3" }; // change this to only show enabled lots
+		int numLots = psystem.getLots().size();
+		String[] parkingLots = new String[numLots];
+		int i = 0;
+		Map<Integer, ParkingLot> lotlist = psystem.getLots();
+		
+		for (ParkingLot lot : lotlist.values()) {
+			
+			parkingLots[i] = lot.getAddress();
+			i++;
+			
+		}
+		
 		lots = new JComboBox(parkingLots);
-		lots.setSelectedIndex(0);
+		lots.setSelectedIndex(selectedLotIndex);
 		lots.setMaximumSize(new Dimension(150, 25));
 		lots.addActionListener(new main());
 		topPanel.add(lots);
@@ -478,15 +538,28 @@ public class main implements ActionListener {
 		
 	}
 	
-	// add update lots when choosing a new lot
+	// Add update lots when choosing a new lot
 	private static void loadSpots() {
+		
+		ParkingLot lot = psystem.getLot(selectedLotIndex);
 
 		for (int i = 1; i <= 10; i++) {
 
 			parkingspot[i] = new JButton("" + i);
-			parkingspot[i].setBackground(new Color(0, 153, 0));
+			
+			if(lot.getParkingSpace(i-1).isEnabled()) {
+				
+				parkingspot[i].setBackground(new Color(0, 153, 0));
+				parkingspot[i].addActionListener(new main());
+				
+			}else {
+				
+				parkingspot[i].setBackground(Color.red);
+				parkingspot[i].setEnabled(false);
+				
+			}
+			
 			parkingspot[i].setForeground(Color.black);
-			parkingspot[i].addActionListener(new main());
 			bottomPanel.add(parkingspot[i]);
 
 		}
@@ -506,9 +579,20 @@ public class main implements ActionListener {
 		for (int i = 21; i <= 30; i++) {
 
 			parkingspot[i] = new JButton("" + i);
-			parkingspot[i].setBackground(new Color(0, 153, 0));
+			
+			if(lot.getParkingSpace(i-1).isEnabled()) {
+				
+				parkingspot[i].setBackground(new Color(0, 153, 0));
+				parkingspot[i].addActionListener(new main());
+				
+			}else {
+				
+				parkingspot[i].setBackground(Color.red);
+				parkingspot[i].setEnabled(false);
+				
+			}
+			
 			parkingspot[i].setForeground(Color.black);
-			parkingspot[i].addActionListener(new main());
 			bottomPanel.add(parkingspot[i]);
 
 		}
@@ -516,23 +600,43 @@ public class main implements ActionListener {
 		for (int i = 31; i <= 40; i++) {
 
 			parkingspot[i] = new JButton("" + i);
-			parkingspot[i].setBackground(new Color(0, 153, 0));
+			
+			if(lot.getParkingSpace(i-1).isEnabled()) {
+				
+				parkingspot[i].setBackground(new Color(0, 153, 0));
+				parkingspot[i].addActionListener(new main());
+				
+			}else {
+				
+				parkingspot[i].setBackground(Color.red);
+				parkingspot[i].setEnabled(false);
+				
+			}
+			
 			parkingspot[i].setForeground(Color.black);
-			parkingspot[i].addActionListener(new main());
 			bottomPanel.add(parkingspot[i]);
 
 		}
 
-		for (int i = 1; i <= 10; i++) {
-			bottomPanel.add(new JLabel(""));
-		}
+		addSpace();
 
 		for (int i = 41; i <= 50; i++) {
 
 			parkingspot[i] = new JButton("" + i);
-			parkingspot[i].setBackground(new Color(0, 153, 0));
+			
+			if(lot.getParkingSpace(i-1).isEnabled()) {
+				
+				parkingspot[i].setBackground(new Color(0, 153, 0));
+				parkingspot[i].addActionListener(new main());
+				
+			}else {
+				
+				parkingspot[i].setBackground(Color.red);
+				parkingspot[i].setEnabled(false);
+				
+			}
+			
 			parkingspot[i].setForeground(Color.black);
-			parkingspot[i].addActionListener(new main());
 			bottomPanel.add(parkingspot[i]);
 
 		}
@@ -540,23 +644,43 @@ public class main implements ActionListener {
 		for (int i = 51; i <= 60; i++) {
 
 			parkingspot[i] = new JButton("" + i);
-			parkingspot[i].setBackground(new Color(0, 153, 0));
+			
+			if(lot.getParkingSpace(i-1).isEnabled()) {
+				
+				parkingspot[i].setBackground(new Color(0, 153, 0));
+				parkingspot[i].addActionListener(new main());
+				
+			}else {
+				
+				parkingspot[i].setBackground(Color.red);
+				parkingspot[i].setEnabled(false);
+				
+			}
+			
 			parkingspot[i].setForeground(Color.black);
-			parkingspot[i].addActionListener(new main());
 			bottomPanel.add(parkingspot[i]);
 
 		}
 
-		for (int i = 1; i <= 10; i++) {
-			bottomPanel.add(new JLabel(""));
-		}
+		addSpace();
 
 		for (int i = 61; i <= 70; i++) {
 
 			parkingspot[i] = new JButton("" + i);
-			parkingspot[i].setBackground(new Color(0, 153, 0));
+			
+			if(lot.getParkingSpace(i-1).isEnabled()) {
+				
+				parkingspot[i].setBackground(new Color(0, 153, 0));
+				parkingspot[i].addActionListener(new main());
+				
+			}else {
+				
+				parkingspot[i].setBackground(Color.red);
+				parkingspot[i].setEnabled(false);
+				
+			}
+			
 			parkingspot[i].setForeground(Color.black);
-			parkingspot[i].addActionListener(new main());
 			bottomPanel.add(parkingspot[i]);
 
 		}
@@ -564,23 +688,43 @@ public class main implements ActionListener {
 		for (int i = 71; i <= 80; i++) {
 
 			parkingspot[i] = new JButton("" + i);
-			parkingspot[i].setBackground(new Color(0, 153, 0));
+			
+			if(lot.getParkingSpace(i-1).isEnabled()) {
+				
+				parkingspot[i].setBackground(new Color(0, 153, 0));
+				parkingspot[i].addActionListener(new main());
+				
+			}else {
+				
+				parkingspot[i].setBackground(Color.red);
+				parkingspot[i].setEnabled(false);
+				
+			}
+			
 			parkingspot[i].setForeground(Color.black);
-			parkingspot[i].addActionListener(new main());
 			bottomPanel.add(parkingspot[i]);
 
 		}
 
-		for (int i = 1; i <= 10; i++) {
-			bottomPanel.add(new JLabel(""));
-		}
+		addSpace();
 
 		for (int i = 81; i <= 90; i++) {
 
 			parkingspot[i] = new JButton("" + i);
-			parkingspot[i].setBackground(new Color(0, 153, 0));
+			
+			if(lot.getParkingSpace(i-1).isEnabled()) {
+				
+				parkingspot[i].setBackground(new Color(0, 153, 0));
+				parkingspot[i].addActionListener(new main());
+				
+			}else {
+				
+				parkingspot[i].setBackground(Color.red);
+				parkingspot[i].setEnabled(false);
+				
+			}
+			
 			parkingspot[i].setForeground(Color.black);
-			parkingspot[i].addActionListener(new main());
 			bottomPanel.add(parkingspot[i]);
 
 		}
@@ -588,9 +732,20 @@ public class main implements ActionListener {
 		for (int i = 91; i <= 100; i++) {
 
 			parkingspot[i] = new JButton("" + i);
-			parkingspot[i].setBackground(new Color(0, 153, 0));
+			
+			if(lot.getParkingSpace(i-1).isEnabled()) {
+				
+				parkingspot[i].setBackground(new Color(0, 153, 0));
+				parkingspot[i].addActionListener(new main());
+				
+			}else {
+				
+				parkingspot[i].setBackground(Color.red);
+				parkingspot[i].setEnabled(false);
+				
+			}
+			
 			parkingspot[i].setForeground(Color.black);
-			parkingspot[i].addActionListener(new main());
 			bottomPanel.add(parkingspot[i]);
 
 		}
@@ -808,6 +963,55 @@ public class main implements ActionListener {
 		return false;
 	}
 	
+	
+	// New JFrame to display new manager login info
+	private static void newManagerInfo() throws Exception{
+		
+		JFrame newManagerPanel = new JFrame();
+		Manager manager = supermanager.autoGenerator();
+		newManagerPanel.setResizable(false);
+		newManagerPanel.setDefaultCloseOperation(newManagerPanel.DISPOSE_ON_CLOSE);
+		newManagerPanel.setSize(400, 150);
+		newManagerPanel.setVisible(true);
+		
+		JPanel info = new JPanel();
+		info.setBorder(new EmptyBorder(10, 10, 10, 10));
+		info.setLayout(new BoxLayout(info, BoxLayout.PAGE_AXIS));
+		
+		info.add(Box.createVerticalStrut(10)); // spacer
+		JTextField label = new JTextField("New Manager Account:");
+		label.setAlignmentX(Component.CENTER_ALIGNMENT);
+		label.setEditable(false);
+		label.setBorder(null);
+		label.setForeground(UIManager.getColor("Label.foreground"));
+		label.setFont(UIManager.getFont("Label.font"));
+		info.add(label);
+		
+		info.add(Box.createVerticalStrut(10)); // spacer
+		JTextField user = new JTextField("Username: " + manager.getUsername());
+		user.setEditable(false);
+		user.setBorder(null);
+		user.setForeground(UIManager.getColor("Label.foreground"));
+		user.setFont(UIManager.getFont("Label.font"));
+		user.setAlignmentX(Component.CENTER_ALIGNMENT);
+		info.add(user);
+		info.add(Box.createVerticalStrut(10)); // spacer
+
+		JTextField pass = new JTextField("Password: " + manager.getPassword());
+		pass.setEditable(false);
+		pass.setBorder(null);
+		pass.setForeground(UIManager.getColor("Label.foreground"));
+		pass.setFont(UIManager.getFont("Label.font"));
+		pass.setAlignmentX(Component.CENTER_ALIGNMENT);
+		info.add(pass);
+		
+		newManagerPanel.add(info, BorderLayout.PAGE_START);
+		User manageruser = new User("manager", "manager", maintainmanagement.users.size() + 1, manager.getUsername(), manager.getPassword(), "manager");
+		maintainmanagement.users.add(manageruser);
+		maintainmanagement.update(path2);
+		
+	}
+	
 	private void loginActions(ActionEvent e) {
 		
 		if (e.getSource() == loginButton) { // Press login button
@@ -920,36 +1124,18 @@ public class main implements ActionListener {
 	public void mainActions(ActionEvent e) throws Exception {
 		
 		// Admin controls
+		
+		// Validate users
+		if(e.getSource() == manage) {
+			
+			System.out.println("gong");
+			
+		}
+		
+		// Create managers
 		if(e.getSource() == createManager) {
-			
-			JFrame newManagerPanel = new JFrame();
-			Manager manager = supermanager.autoGenerator();
-			newManagerPanel.setResizable(false);
-			newManagerPanel.setDefaultCloseOperation(newManagerPanel.DISPOSE_ON_CLOSE);
-			newManagerPanel.setSize(400, 150);
-			newManagerPanel.setVisible(true);
-			
-			
-			JPanel info = new JPanel();
-			info.setLayout(new BoxLayout(info, BoxLayout.PAGE_AXIS));
-			
-			info.add(Box.createVerticalStrut(20)); // spacer
-			JLabel label = new JLabel("New Manager Account:");
-			label.setAlignmentX(Component.CENTER_ALIGNMENT);
-			info.add(label);
-			info.add(Box.createVerticalStrut(10)); // spacer
-			JLabel user = new JLabel("Username: " + manager.getUsername());
-			user.setAlignmentX(Component.CENTER_ALIGNMENT);
-			info.add(user);
-			info.add(Box.createVerticalStrut(10)); // spacer
-			JLabel pass = new JLabel("Password: " + manager.getPassword());
-			pass.setAlignmentX(Component.CENTER_ALIGNMENT);
-			info.add(pass);
-			
-			newManagerPanel.add(info, BorderLayout.PAGE_START);
-			User manageruser = new User("manager", "manager", maintainmanagement.users.size() + 1, manager.getUsername(), manager.getPassword(), "manager");
-			maintainmanagement.users.add(manageruser);
-			maintainmanagement.update(path2);
+			System.out.println("Created new manager");
+			newManagerInfo();
 			
 		}
 		
@@ -958,9 +1144,11 @@ public class main implements ActionListener {
 			System.out.println("User logged out");
 			userText = null;
 			passwordText = null;
+			selectedLotIndex = 0; // reset initial JComboBox value to show Lot 1
 			
 			if(managerLoggedIn || superManagerLoggedIn) {
 				mainGeneralManagementPage.setVisible(false);
+				mainGeneralManagementPage.removeAll();
 				managerLoggedIn = false;
 				superManagerLoggedIn = false;
 			}else {
@@ -971,6 +1159,30 @@ public class main implements ActionListener {
 			loginGeneralPanel.setVisible(true);
 			
 		}
+		
+		if(e.getSource() == addLot) {
+			
+			System.out.println("Created a new Lot");
+			Map<Integer, ParkingLot> lotlist = psystem.getLots();
+			int lotnum = psystem.getLots().size() + 1;
+			String address = "Lot " + lotnum;
+			ParkingLot lot = psystem.addLot(psystem.getLots().size() + 1, address);
+			lot.setEnabled(true);
+			mainGeneralManagementPage.removeAll();
+			navManagementPanel.removeAll();
+			topManagementPanel.removeAll();
+			mainGeneralManagementPage.setVisible(false);
+			mainManagementPage();
+			mainGeneralManagementPage.setVisible(true);
+			
+		}
+		
+		
+		
+		
+		
+		
+		
 
 		String lotValue = "";
 		JComboBox lotlist = null;
@@ -981,6 +1193,72 @@ public class main implements ActionListener {
 			lotlist = (JComboBox) e.getSource();
 			lotValue = (String) lotlist.getSelectedItem();
 			System.out.println(lotValue + " chosen");
+			
+			Map<Integer, ParkingLot> list = psystem.getLots();
+			int i = 0;
+			for (ParkingLot lot : list.values()) {
+				
+				if(lot.getAddress().equals(lotValue)) {
+					selectedLotIndex = i;
+					
+					if(lot.getEnabled()) {
+						lotVisible = "Disable";
+					}else {
+						lotVisible = "Enable";
+					}
+					
+					break;
+				}
+				
+				i++;
+				
+			}
+			
+			// Reload page
+			mainGeneralManagementPage.removeAll();
+			navManagementPanel.removeAll();
+			topManagementPanel.removeAll();
+			mainGeneralManagementPage.setVisible(false);
+			mainManagementPage();
+			mainGeneralManagementPage.setVisible(true);
+			
+		}
+		
+		String lotValue1 = "";
+		JComboBox lotlist1 = null;
+		
+		if (e.getSource() == setLotVisible) {
+			
+			lotlist1 = lots;
+			lotValue1 = (String) lotlist1.getSelectedItem();
+			Map<Integer, ParkingLot> list = psystem.getLots();
+			
+			for (ParkingLot lot : list.values()) {
+				
+				if(lot.getAddress().equals(lotValue1)) {
+					boolean currentstatus = lot.getEnabled();
+					if(currentstatus == true) {
+						lot.setEnabled(false);
+						System.out.println(lot.getAddress() + " set to Disabled");
+						lotVisible = "Enable";
+						setLotVisible.setText(lotVisible);
+					}else {
+						lot.setEnabled(true);
+						System.out.println(lot.getAddress() + " set to Enabled");
+						lotVisible = "Disable";
+						setLotVisible.setText(lotVisible);
+					}
+				}
+				
+			}
+			
+			// Reload page
+			mainGeneralManagementPage.removeAll();
+			navManagementPanel.removeAll();
+			topManagementPanel.removeAll();
+			mainGeneralManagementPage.setVisible(false);
+			mainManagementPage();
+			mainGeneralManagementPage.setVisible(true);
 			
 		}
 		

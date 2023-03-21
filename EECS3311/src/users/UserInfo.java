@@ -46,8 +46,7 @@ public abstract class UserInfo{
 	}
 	
 	public PaymentInfo getPaymentInfo() {
-		// TODO Auto-generated method stub
-		return null;
+		return this.payment_info;
 	}
 	
 	

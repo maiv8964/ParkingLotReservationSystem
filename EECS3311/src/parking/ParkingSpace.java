@@ -1,11 +1,14 @@
 package parking;
 
+import java.util.ArrayList;
+
 import parkingState.*;
 import reservations.Reservation;
 
 public class ParkingSpace {
 	private int id;
 	private boolean is_enabled;
+	private ArrayList<Reservation> listofreservations = new ArrayList<>();
 	private Reservation current_reservation;
 	private State current_state;
 	
@@ -37,11 +40,11 @@ public class ParkingSpace {
 		}
 	}
 
-	public Reservation getCurrentReservation() {
-		return current_reservation;
+	public ArrayList<Reservation> getReservations() {
+		return listofreservations;
 	}
 
-	public void setCurrentReservation(Reservation current_reservation) {
+	public void setReservation(Reservation current_reservation) {
 		this.current_reservation = current_reservation;
 	}
 

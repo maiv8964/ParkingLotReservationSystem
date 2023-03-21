@@ -27,7 +27,8 @@ public class main implements ActionListener {
 	// Singleton Variables
 	private static ParkingSystem psystem;
 	private static SuperManager supermanager;
-	
+	private static ReservationSystemFacade rsystem;
+
 	private static UserInfo currentuser = null;
 	private static UserList userList; // keeps track of all created accounts
 	private static boolean managerLoggedIn = false;
@@ -91,6 +92,12 @@ public class main implements ActionListener {
 	private static JButton setLotVisible;
 	private static String lotVisible;
 	private static int selectedLotIndex;
+	private static int selectedMonthIndex;
+	private static int selectedDateIndex;
+	private static int selectedTimeIndex;
+	private static int parkingspacenum;
+	
+	private static ArrayList<String> months = new ArrayList<>();
 
 	// Payment Page
 	private static JButton payBack;
@@ -121,7 +128,22 @@ public class main implements ActionListener {
 	private static JPanel confirmPanel;
 	private static JLabel confirmLabel;
 	private static JButton confirm;
+	
+	
+	
+	
+	
+	private static String[] monthsList = { "January", "February", "March", "April", "May", "June", "July", "August", "September",
+			"October", "November", "December" };
+	
+	private static String[] daysList = { "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17",
+			"18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30", "31" };
 
+	private static String[] timesList = { "00:00", "01:00", "02:00", "03:00", "04:00", "05:00", "06:00", "07:00", "08:00", "09:00",
+			"10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00",
+			"21:00", "22:00", "23:00" };
+	
+	
 	public static void main(String[] args) throws Exception {
 
 		Frame = new JFrame("YorkU Parking Booking System");
@@ -136,6 +158,22 @@ public class main implements ActionListener {
 		psystem = ParkingSystem.getInstance();
 		lotVisible = "Disable";
 		selectedLotIndex = 0;
+
+		rsystem = ReservationSystemFacade.getInstance();
+		
+		months.add("January");
+		months.add("February");
+		months.add("March");
+		months.add("April");
+		months.add("May");
+		months.add("June");
+		months.add("July");
+		months.add("August");
+		months.add("September");
+		months.add("October");
+		months.add("November");
+		months.add("December");
+
 		// Add already created users into the userList
 		ArrayList<User> users = maintainusers.users;
 
@@ -325,7 +363,6 @@ public class main implements ActionListener {
 	// add feature to update lots when choosing a new lot, button to view current
 	// reservations
 	// admin ppl would have a button to enable/disable parking lots, validate users
-	// supermanager can create managers here
 	private static void mainPage() {
 
 		if (managerLoggedIn || superManagerLoggedIn) {
@@ -493,24 +530,20 @@ public class main implements ActionListener {
 		// Select date
 		datePanel = new JPanel(new FlowLayout());
 
-		String[] months = { "January", "February", "March", "April", "May", "June", "July", "August", "September",
-				"October", "November", "December" };
 		JLabel selectMonth = new JLabel("Month:");
 		datePanel.add(selectMonth);
-		month = new JComboBox(months);
-		month.setSelectedIndex(0);
+		month = new JComboBox(monthsList);
+		month.setSelectedIndex(selectedMonthIndex);
 		month.setMaximumSize(new Dimension(150, 25));
 		month.addActionListener(new main());
 		datePanel.add(month);
 
 		datePanel.add(Box.createHorizontalStrut(10)); // spacer
 
-		String[] days = { "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17",
-				"18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30", "31" };
 		JLabel selectDay = new JLabel("Day:");
 		datePanel.add(selectDay);
-		day = new JComboBox(days);
-		day.setSelectedIndex(0);
+		day = new JComboBox(daysList);
+		day.setSelectedIndex(selectedDateIndex);
 		day.setMaximumSize(new Dimension(150, 25));
 		day.addActionListener(new main());
 
@@ -518,13 +551,10 @@ public class main implements ActionListener {
 
 		datePanel.add(Box.createHorizontalStrut(10)); // spacer
 
-		String[] times = { "00:00", "01:00", "02:00", "03:00", "04:00", "05:00", "06:00", "07:00", "08:00", "09:00",
-				"10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00",
-				"21:00", "22:00", "23:00" };
 		JLabel selectTime = new JLabel("Starting Time (1 Hour Duration Initially):");
 		datePanel.add(selectTime);
-		time = new JComboBox(times);
-		time.setSelectedIndex(0);
+		time = new JComboBox(timesList);
+		time.setSelectedIndex(selectedTimeIndex);
 		time.setMaximumSize(new Dimension(150, 25));
 		time.addActionListener(new main());
 		datePanel.add(time);
@@ -554,32 +584,132 @@ public class main implements ActionListener {
 		psystem = ParkingSystem.getInstance();
 		ParkingLot lot = psystem.getLot(selectedLotIndex + 1);
 
-		for (int a = i; a <= j; a++) {
+		if (superManagerLoggedIn || managerLoggedIn) {
 
-			parkingspot[a] = new JButton("" + a);
+			for (int a = i; a <= j; a++) {
 
-			if (lot.getParkingSpace(a - 1).isEnabled()) {
+				parkingspot[a] = new JButton("" + a);
 
-				parkingspot[a].setBackground(new Color(0, 153, 0));
-				parkingspot[a].addActionListener(new main());
+				// Available
+				if (lot.getParkingSpace(a - 1).isEnabled()) {
 
-			} else {
+					parkingspot[a].setBackground(new Color(0, 153, 0));
+					parkingspot[a].addActionListener(new main());
 
-				parkingspot[a].setBackground(new Color(204, 0, 0));
-				parkingspot[a].setEnabled(false);
+				} else { // Not Available
+
+					parkingspot[a].setBackground(new Color(204, 0, 0));
+					parkingspot[a].setEnabled(false);
+
+				}
+
+				parkingspot[a].setForeground(Color.black);
+				bottomPanel.add(parkingspot[a]);
 
 			}
 
-			parkingspot[a].setForeground(Color.black);
-			bottomPanel.add(parkingspot[a]);
+		} else {
+
+			// Convert month string to number 1-12
+			String monthValue = "";
+			monthValue = (String) month.getSelectedItem();
+			int monthInt = 0;
+
+			monthInt = months.indexOf(monthValue) + 1;
+
+			int dayValue = 0;
+			dayValue = Integer.parseInt((String) day.getSelectedItem());
+
+			String timeValueString = "";
+			timeValueString = (String) time.getSelectedItem();
+
+			int timeValue = Integer.parseInt(timeValueString.substring(0, 2));
+
+			for (int a = i; a <= j; a++) {
+				//System.out.println(a);
+				parkingspot[a] = new JButton("" + a);
+
+				ParkingSpace space = lot.getParkingSpace(a - 1);
+
+				// Is Disabled
+				if (!(lot.getParkingSpace(a - 1).isEnabled())) {
+
+					parkingspot[a].setBackground(new Color(204, 0, 0));
+					parkingspot[a].setEnabled(false);
+					parkingspot[a].setForeground(Color.black);
+					bottomPanel.add(parkingspot[a]);
+
+				} else {
+
+					// No reservations exist in the space
+					if (space.getReservations().size() == 0) {
+						
+						parkingspot[a].setBackground(new Color(0, 153, 0));
+						parkingspot[a].addActionListener(new main());
+						parkingspot[a].setForeground(Color.black);
+						bottomPanel.add(parkingspot[a]);
+
+					}
+
+					else { // There exists a reservation
+						System.out.println("Possible conflict");
+
+						String monthValue1 = "";
+						monthValue = (String) month.getSelectedItem();						
+						int currentMonth = months.indexOf(monthValue) + 1;
+						int currentdayValue = Integer.parseInt((String) day.getSelectedItem());
+						String currenttimeValueString = (String) time.getSelectedItem();
+						int currenttimeValue = Integer.parseInt(timeValueString.substring(0, 2));
+
+						for (Reservation reservation : space.getReservations()) {
+
+							// Same date, need to check time
+							if (reservation.getMonth() == currentMonth && reservation.getDay() == currentdayValue) {
+								System.out.println("same month and day");
+								// If times conflict
+								if (reservation.getStartTime() == currenttimeValue
+										|| (currenttimeValue <= (reservation.getStartTime() + reservation.getDuration())
+												&& currenttimeValue >= reservation.getStartTime())) {
+									
+									System.out.println("same time, not available");
+									parkingspot[a].setBackground(new Color(204, 0, 0));
+									parkingspot[a].setEnabled(false);
+									parkingspot[a].setForeground(Color.black);
+									bottomPanel.add(parkingspot[a]);
+
+								} else {// No conflict
+									
+									parkingspot[a].setBackground(new Color(0, 153, 0));
+									parkingspot[a].addActionListener(new main());
+									parkingspot[a].setForeground(Color.black);
+									bottomPanel.add(parkingspot[a]);
+
+								}
+
+							} else { // No conflict
+								
+								parkingspot[a].setBackground(new Color(0, 153, 0));
+								parkingspot[a].addActionListener(new main());
+								parkingspot[a].setForeground(Color.black);
+								bottomPanel.add(parkingspot[a]);
+
+							}
+
+						}
+
+					}
+
+				}
+
+			}
 
 		}
 
 	}
 
 	// Add update lots when choosing a new lot
-	private static void loadSpots() {
-
+private static void loadSpots() {
+	
 		loadParkingSpots(1, 10);
 		loadParkingSpots(11, 20);
 
@@ -604,6 +734,7 @@ public class main implements ActionListener {
 		loadParkingSpots(91, 100);
 
 	}
+
 
 	private static void addSpace() {
 		for (int i = 1; i <= 10; i++) {
@@ -974,7 +1105,7 @@ public class main implements ActionListener {
 
 	}
 
-	public void mainActions(ActionEvent e) throws Exception {
+	public void mainActions(ActionEvent e) {
 
 		// Admin controls
 
@@ -988,7 +1119,11 @@ public class main implements ActionListener {
 		// Create managers
 		if (e.getSource() == createManager) {
 			System.out.println("Created new manager");
-			newManagerInfo();
+			try {
+				newManagerInfo();
+			} catch (Exception e1) {
+				e1.printStackTrace();
+			}
 
 		}
 
@@ -1071,6 +1206,7 @@ public class main implements ActionListener {
 				mainGeneralPage.removeAll();
 				navPanel.removeAll();
 				topPanel.removeAll();
+				bottomPanel.removeAll();
 				mainGeneralPage.setVisible(false);
 				mainPage();
 			}
@@ -1130,6 +1266,18 @@ public class main implements ActionListener {
 			monthlist = (JComboBox) e.getSource();
 			monthValue = (String) monthlist.getSelectedItem();
 			System.out.println(monthValue + " chosen");
+			
+			// Convert month string to number 1-12
+			int monthInt = 0;
+
+			selectedMonthIndex = months.indexOf((String) month.getSelectedItem());
+			
+			mainGeneralPage.removeAll();
+			navPanel.removeAll();
+			topPanel.removeAll();
+			bottomPanel.removeAll();
+			mainGeneralPage.setVisible(false);
+			mainPage();
 
 		}
 
@@ -1142,6 +1290,15 @@ public class main implements ActionListener {
 			daylist = (JComboBox) e.getSource();
 			dayValue = (String) day.getSelectedItem();
 			System.out.println(dayValue + " chosen");
+			
+			selectedDateIndex = Integer.parseInt(dayValue) - 1;
+			
+			mainGeneralPage.removeAll();
+			navPanel.removeAll();
+			topPanel.removeAll();
+			bottomPanel.removeAll();
+			mainGeneralPage.setVisible(false);
+			mainPage();
 
 		}
 
@@ -1153,7 +1310,16 @@ public class main implements ActionListener {
 
 			timelist = (JComboBox) e.getSource();
 			timeValue = (String) timelist.getSelectedItem();
+			timeValue = timeValue.substring(0,2);
+			selectedTimeIndex = Integer.parseInt(timeValue);
 			System.out.println(timeValue + " chosen");
+			
+			mainGeneralPage.removeAll();
+			navPanel.removeAll();
+			topPanel.removeAll();
+			bottomPanel.removeAll();
+			mainGeneralPage.setVisible(false);
+			mainPage();
 
 		}
 
@@ -1181,12 +1347,12 @@ public class main implements ActionListener {
 
 				licencesuccess.setForeground(Color.red);
 				licencesuccess.setText("Please fill in all the fields correctly");
-				System.out.println("Failed Payment");
+				System.out.println("Failed to fill in all options");
 
 			} else {
 
 				System.out.println("User chose: parking spot " + value);
-
+				parkingspacenum = value - 1;
 				mainGeneralPage.setVisible(false);
 
 				paymentPage();
@@ -1206,7 +1372,7 @@ public class main implements ActionListener {
 			String lotnum = "";
 			JComboBox listlot = null;
 
-			//lotlist = (JComboBox) lots;
+			// lotlist = (JComboBox) lots;
 			lotValue = (String) lots.getSelectedItem();
 
 			Map<Integer, ParkingLot> list = psystem.getLots();
@@ -1214,22 +1380,23 @@ public class main implements ActionListener {
 			for (ParkingLot lot : list.values()) {
 
 				if (lot.getAddress().equals(lotValue)) {
-					
+
 					// Set to disabled
-					if(lot.getParkingSpace(parkingspacenum - 1).isEnabled()) {
-						
-						System.out.println("Parking Space #" + parkingspacenum + "in " + lotValue + " has been disabled");
+					if (lot.getParkingSpace(parkingspacenum - 1).isEnabled()) {
+
+						System.out.println(
+								"Parking Space #" + parkingspacenum + " in " + lotValue + " has been disabled");
 						lot.getParkingSpace(parkingspacenum - 1).setEnabled(false);
 						button.setBackground(new Color(204, 0, 0));
-						
-					}else { // Set to enabled
-						
-						System.out.println("Parking Space #" + lotValue + "in " + lotValue + " has been enabled");
+
+					} else { // Set to enabled
+
+						System.out.println("Parking Space #" + lotValue + " in " + lotValue + " has been enabled");
 						lot.getParkingSpace(parkingspacenum - 1).setEnabled(true);
 						button.setBackground(new Color(0, 153, 0));
-						
+
 					}
-					
+
 					break;
 				}
 
@@ -1238,7 +1405,6 @@ public class main implements ActionListener {
 		}
 
 	}
-
 
 	public void paymentActions(ActionEvent e) {
 
@@ -1301,9 +1467,46 @@ public class main implements ActionListener {
 					} else {
 
 						PaymentInfo paymentinfo = new PaymentInfo(cardNum, expiry, address, name, code);
+						currentuser.setPaymentInfo(paymentinfo);
+
 						System.out.println(type);
 						boolean success = context.execute(paymentinfo, this.currentuser.getParkingRate());
+
 						if (success) {
+
+							// Convert month string to number 1-12
+							String monthValue = "";
+							monthValue = (String) month.getSelectedItem();
+							int monthInt = 0;
+
+							ArrayList<String> months = new ArrayList<>();
+							months.add("January");
+							months.add("February");
+							months.add("March");
+							months.add("April");
+							months.add("May");
+							months.add("June");
+							months.add("July");
+							months.add("August");
+							months.add("September");
+							months.add("October");
+							months.add("November");
+							months.add("December");
+
+							monthInt = months.indexOf(monthValue) + 1;
+
+							int dayValue = 0;
+							dayValue = Integer.parseInt((String) day.getSelectedItem());
+
+							String timeValueString = "";
+							timeValueString = (String) time.getSelectedItem();
+
+							int timeValue = Integer.parseInt(timeValueString.substring(0, 2));
+
+							ParkingLot lot = psystem.getLot(selectedLotIndex + 1);
+
+							Reservation reservation = rsystem.createReservation(currentuser, 1, monthInt, dayValue,
+									timeValue, plateText.getText(), lot.getParkingSpace(parkingspacenum), context);
 
 							paymentGeneralPage.setVisible(false);
 

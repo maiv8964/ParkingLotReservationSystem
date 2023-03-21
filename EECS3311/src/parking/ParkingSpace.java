@@ -12,6 +12,7 @@ public class ParkingSpace {
 	public ParkingSpace(int id) {
 		this.id = id;
 		this.is_enabled = true;
+		this.setState(new Enabled());
 		this.current_reservation = null;
 	}
 	
@@ -27,7 +28,7 @@ public class ParkingSpace {
 		return is_enabled;
 	}
 
-	public void setEabled(boolean isEnable) {
+	public void setEnabled(boolean isEnable) {
 		this.is_enabled = isEnable;
 		if(this.isEnabled()) {
 			this.setState(new Enabled());

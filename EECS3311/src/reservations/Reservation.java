@@ -8,12 +8,16 @@ import users.*;
 public class Reservation {
 
 	private int duration;
-	private Time start_time;
+	private int month;
+	private int day;
+	private int start_time;
 	private String licence_plate;
 	private ParkingSpace space;
 	
-	public Reservation(int duration, Time start_time, String licence_plate, ParkingSpace space) {
+	public Reservation(int duration, int month, int day, int start_time, String licence_plate, ParkingSpace space) {
 		this.duration = duration;
+		this.month = month;
+		this.day = day;
 		this.start_time = start_time;
 		this.licence_plate = licence_plate;
 		this.space = space;
@@ -25,9 +29,17 @@ public class Reservation {
 		
 	}
 	
-	public Time getStartTime() {
+	public int getStartTime() {
 		return this.start_time;
 		
+	}
+	
+	public int getMonth() {
+		return this.month;
+	}
+	
+	public int getDay() {
+		return this.day;
 	}
 	
 	public String getPlate() {

@@ -8,8 +8,8 @@ public class Context {
 		this.provider = provider;
 	}
 	
-	public boolean execute(PaymentInfo info, int parkingRate) {
-		return provider.handlePayment(info, parkingRate);
+	public boolean execute(PaymentInfo info, double d) {
+		return provider.handlePayment(info, d);
 	}
 
 }

@@ -9,6 +9,9 @@ public abstract class UserInfo{
 	private String password;
 	private boolean isValidated;
 	public Reservation currentReservation;
+	public String parkinglot;
+	public int parkingspacenum;
+	
 	
 	public UserInfo() {
 		
@@ -17,6 +20,7 @@ public abstract class UserInfo{
 	public UserInfo(String username, String password) {
 		this.username=username;
 		this.password=password;
+		this.isValidated = false;
 	}
 	
 	public abstract int getParkingRate();
@@ -46,9 +50,9 @@ public abstract class UserInfo{
 	}
 	
 	public PaymentInfo getPaymentInfo() {
-		// TODO Auto-generated method stub
-		return null;
+		return this.payment_info;
 	}
+
 	
 	
 }

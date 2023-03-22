@@ -17,8 +17,7 @@ public class User {
 		this.email = email;
 		this.password = password;
 		this.type = type;
-		System.out.println(this.type);
-		if(type.equals("visitor")) {
+		if(type.equals("visitor") || type.equals("manager")) {
 			this.isValidated = true;
 		}else {
 			this.isValidated = false;
@@ -31,11 +30,25 @@ public class User {
 	}
 
 	public String getFName() {
-		return fname;
+		if(type.equals("super")) {
+			return "admin";
+		}else if(type.equals("manager")){
+			return "manager";
+		}else {
+			return fname;
+		}
 	}
 
 	public String getLName() {
-		return lname;
+		
+		if(type.equals("super")) {
+			return "admin";
+		}else if(type.equals("manager")){
+			return "manager";
+		}else {
+			return lname;
+		}
+		
 	}
 	
 	public void setName(String fname, String lname) {

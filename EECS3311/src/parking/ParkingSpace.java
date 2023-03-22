@@ -1,18 +1,20 @@
 package parking;
 
+import java.util.ArrayList;
+
 import parkingState.*;
 import reservations.Reservation;
 
 public class ParkingSpace {
 	private int id;
 	private boolean is_enabled;
-	private Reservation current_reservation;
+	private ArrayList<Reservation> listofreservations = new ArrayList<>();
 	private State current_state;
 	
 	public ParkingSpace(int id) {
 		this.id = id;
 		this.is_enabled = true;
-		this.current_reservation = null;
+		this.setState(new Enabled());
 	}
 	
 	public int getId() {
@@ -27,7 +29,7 @@ public class ParkingSpace {
 		return is_enabled;
 	}
 
-	public void setEabled(boolean isEnable) {
+	public void setEnabled(boolean isEnable) {
 		this.is_enabled = isEnable;
 		if(this.isEnabled()) {
 			this.setState(new Enabled());
@@ -36,12 +38,12 @@ public class ParkingSpace {
 		}
 	}
 
-	public Reservation getCurrentReservation() {
-		return current_reservation;
+	public ArrayList<Reservation> getReservations() {
+		return listofreservations;
 	}
 
-	public void setCurrentReservation(Reservation current_reservation) {
-		this.current_reservation = current_reservation;
+	public void setReservation(Reservation reservation) {
+		this.listofreservations.add(reservation);
 	}
 
 	public State getSensorStatus() {

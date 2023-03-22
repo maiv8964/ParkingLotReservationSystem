@@ -1,0 +1,3 @@
+first,last,id,email,password,type,validation
+admin,admin,1,admin,Password!23,super,TRUE
+manager,manager,2,manager,Manager!23,manager,TRUE

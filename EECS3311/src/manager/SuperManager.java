@@ -8,13 +8,13 @@ import parking.ParkingSystem;
 public class SuperManager extends Manager {
     private static SuperManager instance;
 
-    private SuperManager(String username, String password) {
+    private SuperManager() {
     	super("admin", "Password!23"); // set default credentials for SuperManager
     }
 
-    public static SuperManager getInstance(String username, String password) {
+    public static SuperManager getInstance() {
         if (instance == null) {
-            instance = new SuperManager(username, password);
+            instance = new SuperManager();
         }
         return instance;
     }

@@ -1,34 +1,36 @@
 package reservations;
 import java.sql.Time;
+import java.util.ArrayList;
 import java.util.Map;
 
 import parking.*;
 import paymentStrategy.*;
 import users.*;
 
-public class ReservationSystem {
+public class ReservationSystemFacade {
 	
-	private static ReservationSystem instance = null;
+	private static ReservationSystemFacade instance = null;
 	private ParkingSystem parkingSystem = null;
 	
 	// Retrieve singleton object of ReservationSystem
-	public static ReservationSystem getInstance() {
+	public static ReservationSystemFacade getInstance() {
 		if(instance == null) {
-			instance = new ReservationSystem();
+			instance = new ReservationSystemFacade();
 		}
 		return instance;
 	}
 	
-	private ReservationSystem(){//Singleton constructor
+	private ReservationSystemFacade(){//Singleton constructor
 		this.parkingSystem = ParkingSystem.getInstance();
 	}
 	
 	// Create a reservation for user
-	public Reservation createReservation(UserInfo userInfo, int duration, Time start_time, String licence_plate, ParkingSpace space, PaymentProvider payment_provider) {
-		if(userInfo.getIsValid() && space.getCurrentReservation() == null && userInfo.currentReservation == null) {//Check that user and space can accept a reservation
-			if(payment_provider.handlePayment(userInfo.getPaymentInfo(),(double)userInfo.getParkingRate())==true) {
-				Reservation reservation = new Reservation(duration, start_time, licence_plate, space);
-				space.setCurrentReservation(reservation);
+	public Reservation createReservation(UserInfo userInfo, int duration, int month, int day, int start_time, String licence_plate, ParkingSpace space, Context context) {
+		if(userInfo.getIsValid() && userInfo.currentReservation == null) {//Check that user and space can accept a reservation
+			if(context.execute(userInfo.getPaymentInfo(),(double)userInfo.getParkingRate())==true) {
+				System.out.println("User is valid, proceeding to book reservation");
+				Reservation reservation = new Reservation(duration, month, day, start_time, licence_plate, space);
+				space.setReservation(reservation);
 				userInfo.currentReservation = reservation;
 				return reservation;
 			}else {
@@ -51,7 +53,10 @@ public class ReservationSystem {
 	}
 	
 	public void cancelBooking(Reservation reservation, UserInfo userInfo) {
-		reservation.getSpace().setCurrentReservation(null);//Clear 
+		
+		ArrayList<Reservation> reservations = reservation.getSpace().getReservations();
+		reservations.remove(reservation);
+		reservation = null;
 		userInfo.currentReservation = null;
 	}
 	

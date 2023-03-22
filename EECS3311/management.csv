@@ -1,7 +1,3 @@
 first,last,id,email,password,type,validation
 admin,admin,1,admin,Password!23,super,TRUE
 manager,manager,2,manager,Manager!23,manager,TRUE
-manager,manager,3,manager_544813840049900,password_544813840068500,manager,TRUE
-manager,manager,4,manager_550756561331699,password_550756561350800,manager,TRUE
-manager,manager,5,manager_551263650950500,password_551263650968299,manager,TRUE
-manager,manager,6,manager_589770140215000,password_589770140238300,manager,TRUE

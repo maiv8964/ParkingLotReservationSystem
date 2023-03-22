@@ -6,6 +6,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import paymentStrategy.*;
 import manager.*;
@@ -146,6 +148,7 @@ public class main implements ActionListener {
 	private static JButton returntomain;
 	private static String errorLot;
 
+	private static Manager validationManagement;
 	private static ArrayList<String> months = new ArrayList<>();
 	private static String[] monthsList = { "January", "February", "March", "April", "May", "June", "July", "August",
 			"September", "October", "November", "December" };
@@ -166,6 +169,8 @@ public class main implements ActionListener {
 		maintainusers.load(path1);
 		maintainmanagement.load(path2);
 
+		//validationManagement deals with validifying new accounts
+		validationManagement = new Manager("validation", "validation");
 		psystem = ParkingSystem.getInstance();
 		lotVisible = "Disable";
 		selectedLotIndex = 0;
@@ -207,7 +212,8 @@ public class main implements ActionListener {
 
 		UserInfoFactory factory = new UserInfoFactory();
 
-		userList.getList().add(factory.makeUser(type, email, password));
+		UserInfo user = factory.makeUser(type, email, password);
+		userList.getList().add(user);
 
 	}
 
@@ -371,9 +377,7 @@ public class main implements ActionListener {
 
 	}
 
-	// add feature to update lots when choosing a new lot, button to view current
-	// reservations
-	// admin ppl would have a button to enable/disable parking lots, validate users
+	// validate users
 	private static void mainPage() {
 
 		if (managerLoggedIn || superManagerLoggedIn) {
@@ -1070,16 +1074,17 @@ public class main implements ActionListener {
 			System.out.println(monthstr);
 			System.out.println(timestr);
 			JLabel lot = new JLabel(monthstr + ", " + currentuser.currentReservation.getDay() + " at " + timestr);
-			
+
 			lot.setFont(new Font("", Font.PLAIN, 20));
 			lot.setAlignmentX(Component.CENTER_ALIGNMENT);
 			bookingPanel.add(lot);
 
-			JLabel location = new JLabel("Location: " + currentuser.parkinglot + ", Parking Space #" + currentuser.parkingspacenum);
+			JLabel location = new JLabel(
+					"Location: " + currentuser.parkinglot + ", Parking Space #" + currentuser.parkingspacenum);
 			location.setFont(new Font("", Font.PLAIN, 20));
 			location.setAlignmentX(Component.CENTER_ALIGNMENT);
 			bookingPanel.add(location);
-			
+
 			JLabel duration = new JLabel("Duration: " + currentuser.currentReservation.getDuration() + " Hours");
 			duration.setFont(new Font("", Font.PLAIN, 20));
 			duration.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -1092,7 +1097,6 @@ public class main implements ActionListener {
 
 	}
 
-	
 	private boolean checkLogin(String username, String password) throws Exception {
 
 		ClassLoader classLoader = getClass().getClassLoader();
@@ -1124,7 +1128,7 @@ public class main implements ActionListener {
 		for (int i = 0; i < maintainusers.users.size(); i++) {
 			// User exists
 			if (maintainusers.users.get(i).getEmail().equals(username)
-					&& maintainusers.users.get(i).getPassword().equals(password)) {
+					&& maintainusers.users.get(i).getPassword().equals(password) && maintainusers.users.get(i).getValidation().equals("TRUE")) {
 
 				System.out.println("Logged in user is type: " + maintainusers.users.get(i).getType());
 
@@ -1135,8 +1139,15 @@ public class main implements ActionListener {
 						this.currentuser = userList.getList().get(j);
 					}
 				}
-
-				return true;
+				
+				if(this.currentuser.getIsValid()) {
+					
+					return true;
+					
+				}else {
+					
+					return false;
+				}
 			}
 
 		}
@@ -1214,7 +1225,7 @@ public class main implements ActionListener {
 
 				} else {
 					success.setForeground(Color.red);
-					success.setText("Login incorrect");
+					success.setText("Login incorrect, or account needs to be verified");
 					System.out.println("Failed Login");
 				}
 
@@ -1238,6 +1249,8 @@ public class main implements ActionListener {
 
 	}
 
+
+	
 	public void registerActions(ActionEvent e) throws Exception {
 
 		if (e.getSource() == regBack) {
@@ -1279,22 +1292,38 @@ public class main implements ActionListener {
 				regsuccess.setText("Please fill in all the fields");
 				System.out.println("Failed Register");
 			} else {
+				
+				UserInfoFactory factory = new UserInfoFactory();
 
-				// Adds to user.csv
-				User newuser = new User(fname, lname, maintainusers.users.size() + 1, email, password, type);
-				maintainusers.users.add(newuser);
-				maintainusers.update(path1);
+				UserInfo user = factory.makeUser(type, email, password);
 
-				// Adds to userlist
-				addToUserList(email, password, type);
+				if(validationManagement.validateUser(user)) {
+				
+					// Adds to user.csv
+					User newuser = new User(fname, lname, maintainusers.users.size() + 1, email, password, type);
+					newuser.setValidation("TRUE");
+					maintainusers.users.add(newuser);
+					maintainusers.update(path1);
 
-				System.out.println("Registering user: [type: " + type + ", first name: " + fname + ", last name: "
-						+ lname + ", email: " + email + ", password: " + password + "]");
+					// Adds to userlist
+					addToUserList(email, password, type);
 
-				registerGeneralPanel.setVisible(false);
+					System.out.println("Registering user: [type: " + type + ", first name: " + fname + ", last name: "
+							+ lname + ", email: " + email + ", password: " + password + "]");
 
-				loginPage();
-				loginGeneralPanel.setVisible(true);
+					registerGeneralPanel.setVisible(false);
+
+					loginPage();
+					loginGeneralPanel.setVisible(true);
+					
+				}else {
+					
+					regsuccess.setForeground(Color.red);
+					regsuccess.setText("Invalid Email or weak password");
+					System.out.println("Failed Register");
+					
+				}
+
 
 			}
 
@@ -1809,10 +1838,10 @@ public class main implements ActionListener {
 							ParkingLot lot = psystem.getLot(selectedLotIndex + 1);
 							System.out.println("Creating Reservation in " + lot.getAddress());
 							System.out.println("Adding reservation to Parking Space " + parkingspacenum);
-							
+
 							currentuser.parkinglot = lot.getAddress();
 							currentuser.parkingspacenum = parkingspacenum;
-							
+
 							Reservation reservation = rsystem.createReservation(currentuser, 1, monthInt, dayValue,
 									timeValue, plateText.getText(), lot.getParkingSpace(parkingspacenum), context);
 

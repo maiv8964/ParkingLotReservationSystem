@@ -2,5 +2,4 @@ first,last,id,email,password,type,validation
 student,student,1,student@yorku.ca,student,student,TRUE
 visitor,visitor,2,visitor@yorku.ca,visitor,visitor,TRUE
 faculty,faculty,3,faculty@yorku.ca,faculty,faculty,TRUE
-test,test,4,test,test,faculty,TRUE
 qwer,qwer,5,qwer,qwer,visitor,TRUE

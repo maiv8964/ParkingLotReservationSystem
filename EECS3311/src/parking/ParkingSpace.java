@@ -9,14 +9,12 @@ public class ParkingSpace {
 	private int id;
 	private boolean is_enabled;
 	private ArrayList<Reservation> listofreservations = new ArrayList<>();
-	private Reservation current_reservation;
 	private State current_state;
 	
 	public ParkingSpace(int id) {
 		this.id = id;
 		this.is_enabled = true;
 		this.setState(new Enabled());
-		this.current_reservation = null;
 	}
 	
 	public int getId() {
@@ -44,8 +42,8 @@ public class ParkingSpace {
 		return listofreservations;
 	}
 
-	public void setReservation(Reservation current_reservation) {
-		this.current_reservation = current_reservation;
+	public void setReservation(Reservation reservation) {
+		this.listofreservations.add(reservation);
 	}
 
 	public State getSensorStatus() {

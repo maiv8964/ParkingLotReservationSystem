@@ -1,6 +1,5 @@
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-import java.time.LocalDate;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -96,8 +95,19 @@ public class main implements ActionListener {
 	private static int selectedDateIndex;
 	private static int selectedTimeIndex;
 	private static int parkingspacenum;
-	
-	private static ArrayList<String> months = new ArrayList<>();
+
+	// View Booking Page
+	private static JButton viewBack;
+	private static JPanel viewGeneralPage;
+	private static JPanel optionsPanel;
+	private static JPanel bookingPanel;
+	private static JButton cancel;
+	private static JLabel addTimeLabel;
+	private static JButton extend;
+
+	private static JRadioButton one = new JRadioButton("  1 Hour");
+	private static JRadioButton two = new JRadioButton("2 Hours  ");
+	private static ButtonGroup options = new ButtonGroup();
 
 	// Payment Page
 	private static JButton payBack;
@@ -128,22 +138,23 @@ public class main implements ActionListener {
 	private static JPanel confirmPanel;
 	private static JLabel confirmLabel;
 	private static JButton confirm;
-	
-	
-	
-	
-	
-	private static String[] monthsList = { "January", "February", "March", "April", "May", "June", "July", "August", "September",
-			"October", "November", "December" };
-	
-	private static String[] daysList = { "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17",
-			"18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30", "31" };
 
-	private static String[] timesList = { "00:00", "01:00", "02:00", "03:00", "04:00", "05:00", "06:00", "07:00", "08:00", "09:00",
-			"10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00",
-			"21:00", "22:00", "23:00" };
-	
-	
+	// Error Page
+	private static JPanel errorLotPage;
+	private static JPanel errorPanel;
+	private static JLabel errorLabel;
+	private static JButton returntomain;
+	private static String errorLot;
+
+	private static ArrayList<String> months = new ArrayList<>();
+	private static String[] monthsList = { "January", "February", "March", "April", "May", "June", "July", "August",
+			"September", "October", "November", "December" };
+	private static String[] daysList = { "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14",
+			"15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30", "31" };
+	private static String[] timesList = { "00:00", "01:00", "02:00", "03:00", "04:00", "05:00", "06:00", "07:00",
+			"08:00", "09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00",
+			"20:00", "21:00", "22:00", "23:00" };
+
 	public static void main(String[] args) throws Exception {
 
 		Frame = new JFrame("YorkU Parking Booking System");
@@ -160,7 +171,7 @@ public class main implements ActionListener {
 		selectedLotIndex = 0;
 
 		rsystem = ReservationSystemFacade.getInstance();
-		
+
 		months.add("January");
 		months.add("February");
 		months.add("March");
@@ -384,10 +395,10 @@ public class main implements ActionListener {
 		mainGeneralManagementPage.setLayout(new BoxLayout(mainGeneralManagementPage, BoxLayout.PAGE_AXIS));
 		Frame.getContentPane().add(mainGeneralManagementPage);
 
-		mainGeneralManagementPage.add(Box.createVerticalStrut(10)); // spacer
-
 		// Buttons at top of screen
 		navManagementPanel = new JPanel(new FlowLayout());
+
+		navManagementPanel.add(Box.createVerticalStrut(10)); // spacer
 
 		manage = new JButton("Validate Users");
 		manage.addActionListener(new main());
@@ -407,7 +418,7 @@ public class main implements ActionListener {
 
 		// Top part of screen
 		topManagementPanel = new JPanel();
-		topManagementPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
+		topManagementPanel.setBorder(new EmptyBorder(0, 10, 10, 10));
 		topManagementPanel.setLayout(new BoxLayout(topManagementPanel, BoxLayout.PAGE_AXIS));
 
 		addLot = new JButton("Add Lot");
@@ -443,13 +454,13 @@ public class main implements ActionListener {
 		setLotVisible.setAlignmentX(Component.CENTER_ALIGNMENT);
 		topManagementPanel.add(setLotVisible);
 
-		// topManagementPanel.add(Box.createVerticalStrut(750)); // spacer
-		topManagementPanel.setBackground(Color.DARK_GRAY);
+		topManagementPanel.add(Box.createVerticalStrut(10)); // spacer
+		topManagementPanel.setBackground(Color.gray);
 
 		// Bottom part of screen
 		bottomPanel = new JPanel(new GridLayout(0, 10, 10, 10));
 		bottomPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
-		bottomPanel.setBackground(Color.gray);
+		bottomPanel.setBackground(Color.DARK_GRAY);
 
 		loadSpots();
 
@@ -466,10 +477,10 @@ public class main implements ActionListener {
 		mainGeneralPage.setLayout(new BoxLayout(mainGeneralPage, BoxLayout.PAGE_AXIS));
 		Frame.getContentPane().add(mainGeneralPage);
 
-		mainGeneralPage.add(Box.createVerticalStrut(10)); // spacer
-
 		// Buttons at top of screen
 		navPanel = new JPanel(new FlowLayout());
+
+		navPanel.add(Box.createVerticalStrut(10)); // spacer
 
 		bookings = new JButton("View/Edit Current Booking");
 		bookings.addActionListener(new main());
@@ -478,6 +489,7 @@ public class main implements ActionListener {
 		mainBack = new JButton("Logout");
 		mainBack.addActionListener(new main());
 		navPanel.add(mainBack);
+		navPanel.setBackground(Color.gray);
 
 		// Top part of screen
 		topPanel = new JPanel();
@@ -487,30 +499,19 @@ public class main implements ActionListener {
 		JLabel label = new JLabel("Select Parking Lot, Time, and Parking Spot:");
 		label.setAlignmentX(Component.CENTER_ALIGNMENT);
 		topPanel.add(label);
+		topPanel.setBackground(Color.gray);
 
 		topPanel.add(Box.createVerticalStrut(10)); // spacer
 
-		int numLots = 0;
-		Map<Integer, ParkingLot> lotlist = psystem.getLots();
-
-		// Count the enabled parking lots
-		for (ParkingLot lot : lotlist.values()) {
-
-			if (lot.getEnabled()) {
-				numLots++;
-			}
-
-		}
-
+		int numLots = psystem.getLots().size();
 		String[] parkingLots = new String[numLots];
 		int i = 0;
-		// Only add the enabled lots to array
+		Map<Integer, ParkingLot> lotlist = psystem.getLots();
+
 		for (ParkingLot lot : lotlist.values()) {
 
-			if (lot.getEnabled()) {
-				parkingLots[i] = lot.getAddress();
-				i++;
-			}
+			parkingLots[i] = lot.getAddress();
+			i++;
 
 		}
 
@@ -519,12 +520,14 @@ public class main implements ActionListener {
 		lots.setMaximumSize(new Dimension(150, 25));
 		lots.addActionListener(new main());
 		topPanel.add(lots);
+		topPanel.setBackground(Color.gray);
 
 		// Licence plate
 		licencePanel = new JPanel(new FlowLayout());
 		plateLabel = new JLabel("Licence Plate:");
 		licencePanel.add(plateLabel);
 		plateText = new JTextField(10);
+		licencePanel.setBackground(Color.gray);
 		licencePanel.add(plateText);
 
 		// Select date
@@ -537,6 +540,7 @@ public class main implements ActionListener {
 		month.setMaximumSize(new Dimension(150, 25));
 		month.addActionListener(new main());
 		datePanel.add(month);
+		datePanel.setBackground(Color.gray);
 
 		datePanel.add(Box.createHorizontalStrut(10)); // spacer
 
@@ -567,7 +571,7 @@ public class main implements ActionListener {
 		// Bottom part of screen
 		bottomPanel = new JPanel(new GridLayout(0, 10, 10, 10));
 		bottomPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
-		bottomPanel.setBackground(Color.gray);
+		bottomPanel.setBackground(Color.DARK_GRAY);
 
 		loadSpots();
 
@@ -599,7 +603,7 @@ public class main implements ActionListener {
 				} else { // Not Available
 
 					parkingspot[a].setBackground(new Color(204, 0, 0));
-					parkingspot[a].setEnabled(false);
+					parkingspot[a].addActionListener(new main());
 
 				}
 
@@ -626,24 +630,23 @@ public class main implements ActionListener {
 			int timeValue = Integer.parseInt(timeValueString.substring(0, 2));
 
 			for (int a = i; a <= j; a++) {
-				//System.out.println(a);
+
 				parkingspot[a] = new JButton("" + a);
 
 				ParkingSpace space = lot.getParkingSpace(a - 1);
 
 				// Is Disabled
 				if (!(lot.getParkingSpace(a - 1).isEnabled())) {
-
 					parkingspot[a].setBackground(new Color(204, 0, 0));
 					parkingspot[a].setEnabled(false);
 					parkingspot[a].setForeground(Color.black);
 					bottomPanel.add(parkingspot[a]);
 
-				} else {
+				} else { // Is Enabled
 
 					// No reservations exist in the space
 					if (space.getReservations().size() == 0) {
-						
+
 						parkingspot[a].setBackground(new Color(0, 153, 0));
 						parkingspot[a].addActionListener(new main());
 						parkingspot[a].setForeground(Color.black);
@@ -652,10 +655,9 @@ public class main implements ActionListener {
 					}
 
 					else { // There exists a reservation
-						System.out.println("Possible conflict");
 
 						String monthValue1 = "";
-						monthValue = (String) month.getSelectedItem();						
+						monthValue = (String) month.getSelectedItem();
 						int currentMonth = months.indexOf(monthValue) + 1;
 						int currentdayValue = Integer.parseInt((String) day.getSelectedItem());
 						String currenttimeValueString = (String) time.getSelectedItem();
@@ -665,20 +667,19 @@ public class main implements ActionListener {
 
 							// Same date, need to check time
 							if (reservation.getMonth() == currentMonth && reservation.getDay() == currentdayValue) {
-								System.out.println("same month and day");
+
 								// If times conflict
 								if (reservation.getStartTime() == currenttimeValue
-										|| (currenttimeValue <= (reservation.getStartTime() + reservation.getDuration())
+										|| (currenttimeValue < (reservation.getStartTime() + reservation.getDuration())
 												&& currenttimeValue >= reservation.getStartTime())) {
-									
-									System.out.println("same time, not available");
+
 									parkingspot[a].setBackground(new Color(204, 0, 0));
 									parkingspot[a].setEnabled(false);
 									parkingspot[a].setForeground(Color.black);
 									bottomPanel.add(parkingspot[a]);
 
 								} else {// No conflict
-									
+
 									parkingspot[a].setBackground(new Color(0, 153, 0));
 									parkingspot[a].addActionListener(new main());
 									parkingspot[a].setForeground(Color.black);
@@ -687,7 +688,7 @@ public class main implements ActionListener {
 								}
 
 							} else { // No conflict
-								
+
 								parkingspot[a].setBackground(new Color(0, 153, 0));
 								parkingspot[a].addActionListener(new main());
 								parkingspot[a].setForeground(Color.black);
@@ -708,8 +709,8 @@ public class main implements ActionListener {
 	}
 
 	// Add update lots when choosing a new lot
-private static void loadSpots() {
-	
+	private static void loadSpots() {
+
 		loadParkingSpots(1, 10);
 		loadParkingSpots(11, 20);
 
@@ -734,7 +735,6 @@ private static void loadSpots() {
 		loadParkingSpots(91, 100);
 
 	}
-
 
 	private static void addSpace() {
 		for (int i = 1; i <= 10; i++) {
@@ -896,6 +896,203 @@ private static void loadSpots() {
 
 	}
 
+	private static void ErrorLotPage() {
+
+		errorLotPage = new JPanel();
+		errorLotPage.setVisible(false);
+		errorLotPage.setLayout(new BoxLayout(errorLotPage, BoxLayout.PAGE_AXIS));
+		Frame.getContentPane().add(errorLotPage);
+
+		errorPanel = new JPanel();
+		errorPanel.setBorder(new EmptyBorder(100, 10, 10, 10));
+		errorPanel.setLayout(new BoxLayout(errorPanel, BoxLayout.PAGE_AXIS));
+
+		// Username/Email
+		errorLabel = new JLabel(errorLot + " Is Not Available This Time");
+		errorLabel.setFont(new Font("", Font.PLAIN, 30));
+		errorLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+		errorLabel.setForeground(Color.red);
+		errorPanel.add(errorLabel);
+
+		errorPanel.add(Box.createVerticalStrut(10)); // spacer
+
+		// Register Button
+		returntomain = new JButton("Return To Main Screen");
+		returntomain.setAlignmentX(Component.CENTER_ALIGNMENT);
+		returntomain.addActionListener(new main());
+		errorPanel.add(returntomain);
+
+		errorLotPage.add(errorPanel, BorderLayout.PAGE_START);
+
+	}
+
+	// Helper class for viewBookingPage()
+	private static String getTime(int i) {
+
+		String time = "";
+
+		if (i == 0) {
+			time = "12:00 AM";
+		} else if (i == 1) {
+			time = "1:00 AM";
+		} else if (i == 2) {
+			time = "2:00 AM";
+		} else if (i == 3) {
+			time = "3:00 AM";
+		} else if (i == 4) {
+			time = "4:00 AM";
+		} else if (i == 5) {
+			time = "5:00 AM";
+		} else if (i == 6) {
+			time = "6:00 AM";
+		} else if (i == 7) {
+			time = "7:00 AM";
+		} else if (i == 8) {
+			time = "8:00 AM";
+		} else if (i == 9) {
+			time = "9:00 AM";
+		} else if (i == 10) {
+			time = "10:00 AM";
+		} else if (i == 11) {
+			time = "11:00 AM";
+		} else if (i == 12) {
+			time = "12:00 AM";
+		} else if (i == 13) {
+			time = "1:00 PM";
+		} else if (i == 14) {
+			time = "2:00 PM";
+		} else if (i == 15) {
+			time = "3:00 PM";
+		} else if (i == 16) {
+			time = "4:00 PM";
+		} else if (i == 17) {
+			time = "5:00 PM";
+		} else if (i == 18) {
+			time = "6:00 PM";
+		} else if (i == 19) {
+			time = "7:00 PM";
+		} else if (i == 20) {
+			time = "8:00 PM";
+		} else if (i == 21) {
+			time = "9:00 PM";
+		} else if (i == 22) {
+			time = "10:00 PM";
+		} else if (i == 23) {
+			time = "11:00 PM";
+		}
+
+		return time;
+
+	}
+
+	// Helper class for viewBookingPage()
+	private static String getMonth(int i) {
+
+		String month = "";
+
+		if (i == 1) {
+			month = "January";
+		} else if (i == 2) {
+			month = "February";
+		} else if (i == 3) {
+			month = "March";
+		} else if (i == 4) {
+			month = "April";
+		} else if (i == 5) {
+			month = "May";
+		} else if (i == 6) {
+			month = "June";
+		} else if (i == 7) {
+			month = "July";
+		} else if (i == 8) {
+			month = "August";
+		} else if (i == 9) {
+			month = "September";
+		} else if (i == 10) {
+			month = "October";
+		} else if (i == 11) {
+			month = "November";
+		} else if (i == 12) {
+			month = "December";
+		}
+
+		return month;
+
+	}
+
+	private static void viewBookingPage() {
+
+		viewGeneralPage = new JPanel();
+		viewGeneralPage.setVisible(false);
+		viewGeneralPage.setLayout(new BoxLayout(viewGeneralPage, BoxLayout.PAGE_AXIS));
+		Frame.getContentPane().add(viewGeneralPage);
+
+		viewGeneralPage.add(Box.createVerticalStrut(10)); // spacer
+
+		viewBack = new JButton("Back");
+		viewBack.setAlignmentX(Component.CENTER_ALIGNMENT);
+		viewBack.addActionListener(new main());
+		viewGeneralPage.add(viewBack);
+
+		viewGeneralPage.add(Box.createVerticalStrut(20)); // spacer
+
+		if (currentuser.currentReservation != null) {
+
+			optionsPanel = new JPanel(new FlowLayout());
+			optionsPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
+			optionsPanel.setLayout(new BoxLayout(optionsPanel, BoxLayout.LINE_AXIS));
+
+			cancel = new JButton("Cancel Booking");
+			cancel.setAlignmentX(Component.CENTER_ALIGNMENT);
+			cancel.addActionListener(new main());
+			optionsPanel.add(cancel);
+
+			addTimeLabel = new JLabel("    Extend Time:");
+			optionsPanel.add(addTimeLabel);
+
+			// Payment types
+			options.add(one);
+			options.add(two);
+
+			optionsPanel.add(one);
+			optionsPanel.add(two);
+
+			extend = new JButton("Extend Time");
+			extend.addActionListener(new main());
+			optionsPanel.add(extend);
+
+			bookingPanel = new JPanel(new FlowLayout());
+			bookingPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
+			bookingPanel.setLayout(new BoxLayout(bookingPanel, BoxLayout.PAGE_AXIS));
+
+			String monthstr = getMonth(currentuser.currentReservation.getMonth());
+			String timestr = getTime(currentuser.currentReservation.getStartTime());
+			System.out.println(monthstr);
+			System.out.println(timestr);
+			JLabel lot = new JLabel(monthstr + ", " + currentuser.currentReservation.getDay() + " at " + timestr);
+			
+			lot.setFont(new Font("", Font.PLAIN, 20));
+			lot.setAlignmentX(Component.CENTER_ALIGNMENT);
+			bookingPanel.add(lot);
+
+			JLabel location = new JLabel("Location: " + currentuser.parkinglot + ", Parking Space #" + currentuser.parkingspacenum);
+			location.setFont(new Font("", Font.PLAIN, 20));
+			location.setAlignmentX(Component.CENTER_ALIGNMENT);
+			bookingPanel.add(location);
+			
+			JLabel duration = new JLabel("Duration: " + currentuser.currentReservation.getDuration() + " Hours");
+			duration.setFont(new Font("", Font.PLAIN, 20));
+			duration.setAlignmentX(Component.CENTER_ALIGNMENT);
+			bookingPanel.add(duration);
+
+			viewGeneralPage.add(optionsPanel, BorderLayout.PAGE_START);
+			viewGeneralPage.add(bookingPanel, BorderLayout.PAGE_START);
+
+		}
+
+	}
+
+	
 	private boolean checkLogin(String username, String password) throws Exception {
 
 		ClassLoader classLoader = getClass().getClassLoader();
@@ -1116,6 +1313,15 @@ private static void loadSpots() {
 
 		}
 
+		if (e.getSource() == bookings) {
+
+			System.out.println("Edit/View Booking");
+			mainGeneralPage.setVisible(false);
+			viewBookingPage();
+			viewGeneralPage.setVisible(true);
+
+		}
+
 		// Create managers
 		if (e.getSource() == createManager) {
 			System.out.println("Created new manager");
@@ -1132,7 +1338,9 @@ private static void loadSpots() {
 			userText = null;
 			passwordText = null;
 			selectedLotIndex = 0; // reset initial JComboBox value to show Lot 1
-
+			selectedMonthIndex = 0;
+			selectedDateIndex = 0;
+			selectedTimeIndex = 0;
 			if (managerLoggedIn || superManagerLoggedIn) {
 				System.out.println("Management User logged out");
 				mainGeneralManagementPage.removeAll();
@@ -1172,43 +1380,78 @@ private static void loadSpots() {
 		// Checks if the lot was changed
 		if (e.getSource() == lots) {
 
-			lotlist = (JComboBox) e.getSource();
-			lotValue = (String) lotlist.getSelectedItem();
-			System.out.println(lotValue + " chosen");
+			if (superManagerLoggedIn || managerLoggedIn) {
 
-			Map<Integer, ParkingLot> list = psystem.getLots();
-			int i = 0;
-			for (ParkingLot lot : list.values()) {
+				lotlist = (JComboBox) e.getSource();
+				lotValue = (String) lotlist.getSelectedItem();
 
-				if (lot.getAddress().equals(lotValue)) {
-					selectedLotIndex = i;
-					if (lot.getEnabled()) {
-						lotVisible = "Disable";
-					} else {
-						lotVisible = "Enable";
+				Map<Integer, ParkingLot> list = psystem.getLots();
+				int i = 0;
+				for (ParkingLot lot : list.values()) {
+
+					if (lot.getAddress().equals(lotValue)) {
+						selectedLotIndex = i;
+						if (lot.getEnabled()) {
+							lotVisible = "Disable";
+						} else {
+							lotVisible = "Enable";
+						}
+
+						break;
 					}
 
-					break;
+					i++;
+
 				}
 
-				i++;
-
-			}
-
-			// Reload page
-			if (superManagerLoggedIn || managerLoggedIn) {
 				mainGeneralManagementPage.removeAll();
 				navManagementPanel.removeAll();
 				topManagementPanel.removeAll();
 				mainGeneralManagementPage.setVisible(false);
 				mainPage();
+
 			} else {
-				mainGeneralPage.removeAll();
-				navPanel.removeAll();
-				topPanel.removeAll();
-				bottomPanel.removeAll();
-				mainGeneralPage.setVisible(false);
-				mainPage();
+
+				lotlist = (JComboBox) e.getSource();
+				lotValue = (String) lotlist.getSelectedItem();
+
+				Map<Integer, ParkingLot> list = psystem.getLots();
+				int i = 0;
+				for (ParkingLot lot : list.values()) {
+
+					if (lot.getAddress().equals(lotValue)) {
+						if (lot.getEnabled()) {
+							selectedLotIndex = i;
+
+							// Reload
+							mainGeneralPage.removeAll();
+							navPanel.removeAll();
+							topPanel.removeAll();
+							bottomPanel.removeAll();
+							mainGeneralPage.setVisible(false);
+							mainPage();
+
+						} else {
+
+							selectedLotIndex = 0;
+							errorLot = lot.getAddress();
+							mainGeneralPage.removeAll();
+							navPanel.removeAll();
+							topPanel.removeAll();
+							bottomPanel.removeAll();
+							mainGeneralPage.setVisible(false);
+							ErrorLotPage();
+							errorLotPage.setVisible(true);
+
+						}
+
+						break;
+					}
+
+					i++;
+
+				}
+
 			}
 
 		}
@@ -1251,12 +1494,6 @@ private static void loadSpots() {
 
 		}
 
-		if (e.getSource() == bookings) {
-
-			System.out.println("Edit/View Booking");
-
-		}
-
 		String monthValue = "";
 		JComboBox monthlist = null;
 
@@ -1265,13 +1502,12 @@ private static void loadSpots() {
 
 			monthlist = (JComboBox) e.getSource();
 			monthValue = (String) monthlist.getSelectedItem();
-			System.out.println(monthValue + " chosen");
-			
+
 			// Convert month string to number 1-12
 			int monthInt = 0;
 
 			selectedMonthIndex = months.indexOf((String) month.getSelectedItem());
-			
+
 			mainGeneralPage.removeAll();
 			navPanel.removeAll();
 			topPanel.removeAll();
@@ -1289,10 +1525,9 @@ private static void loadSpots() {
 
 			daylist = (JComboBox) e.getSource();
 			dayValue = (String) day.getSelectedItem();
-			System.out.println(dayValue + " chosen");
-			
+
 			selectedDateIndex = Integer.parseInt(dayValue) - 1;
-			
+
 			mainGeneralPage.removeAll();
 			navPanel.removeAll();
 			topPanel.removeAll();
@@ -1310,10 +1545,9 @@ private static void loadSpots() {
 
 			timelist = (JComboBox) e.getSource();
 			timeValue = (String) timelist.getSelectedItem();
-			timeValue = timeValue.substring(0,2);
+			timeValue = timeValue.substring(0, 2);
 			selectedTimeIndex = Integer.parseInt(timeValue);
-			System.out.println(timeValue + " chosen");
-			
+
 			mainGeneralPage.removeAll();
 			navPanel.removeAll();
 			topPanel.removeAll();
@@ -1351,15 +1585,46 @@ private static void loadSpots() {
 
 			} else {
 
-				System.out.println("User chose: parking spot " + value);
-				parkingspacenum = value - 1;
-				mainGeneralPage.setVisible(false);
+				lotValue = (String) lots.getSelectedItem();
 
-				paymentPage();
-				Frame.add(paymentGeneralPage);
-				paymentGeneralPage.setVisible(true);
+				Map<Integer, ParkingLot> list = psystem.getLots();
+				int i = 0;
+				for (ParkingLot lot : list.values()) {
 
-				System.out.println("On payment page");
+					if (lot.getAddress().equals(lotValue)) {
+						if (lot.getEnabled()) {
+							selectedLotIndex = i;
+
+							System.out.println("User chose: parking spot " + value);
+							parkingspacenum = value - 1;
+							mainGeneralPage.setVisible(false);
+
+							paymentPage();
+							Frame.add(paymentGeneralPage);
+							paymentGeneralPage.setVisible(true);
+
+							System.out.println("On payment page");
+
+						} else { // Extra error check to prevent booking a parking space that is disabled
+
+							selectedLotIndex = 0;
+							errorLot = lot.getAddress();
+							mainGeneralPage.removeAll();
+							navPanel.removeAll();
+							topPanel.removeAll();
+							bottomPanel.removeAll();
+							mainGeneralPage.setVisible(false);
+							ErrorLotPage();
+							errorLotPage.setVisible(true);
+
+						}
+
+						break;
+					}
+
+					i++;
+
+				}
 
 			}
 
@@ -1399,6 +1664,44 @@ private static void loadSpots() {
 
 					break;
 				}
+
+			}
+
+		}
+
+	}
+
+	public void viewActions(ActionEvent e) {
+
+		if (e.getSource() == viewBack) {
+
+			viewGeneralPage.removeAll();
+			viewGeneralPage.setVisible(false);
+			mainPage();
+			mainGeneralPage.setVisible(true);
+			System.out.println("Back to main menu");
+
+		}
+
+		if (e.getSource() == cancel) {
+
+			System.out.println("Cancelled Reservation");
+			rsystem.cancelBooking(currentuser.currentReservation, currentuser);
+			currentuser.currentReservation = null;
+			currentuser.parkinglot = "";
+			currentuser.parkingspacenum = 0;
+
+		}
+
+		if (e.getSource() == extend) {
+
+			if (one.isSelected()) {
+
+				rsystem.editBooking(currentuser.currentReservation, 2);
+
+			} else if (two.isSelected()) {
+
+				rsystem.editBooking(currentuser.currentReservation, 3);
 
 			}
 
@@ -1504,7 +1807,12 @@ private static void loadSpots() {
 							int timeValue = Integer.parseInt(timeValueString.substring(0, 2));
 
 							ParkingLot lot = psystem.getLot(selectedLotIndex + 1);
-
+							System.out.println("Creating Reservation in " + lot.getAddress());
+							System.out.println("Adding reservation to Parking Space " + parkingspacenum);
+							
+							currentuser.parkinglot = lot.getAddress();
+							currentuser.parkingspacenum = parkingspacenum;
+							
 							Reservation reservation = rsystem.createReservation(currentuser, 1, monthInt, dayValue,
 									timeValue, plateText.getText(), lot.getParkingSpace(parkingspacenum), context);
 
@@ -1541,6 +1849,26 @@ private static void loadSpots() {
 		if (e.getSource() == confirm) {
 
 			confirmationGeneralPage.setVisible(false);
+			selectedMonthIndex = 0;
+			selectedDateIndex = 0;
+			selectedTimeIndex = 0;
+			selectedLotIndex = 0;
+
+			mainPage();
+
+		}
+
+	}
+
+	public void errorActions(ActionEvent e) {
+
+		if (e.getSource() == returntomain) {
+
+			errorLotPage.setVisible(false);
+			selectedMonthIndex = 0;
+			selectedDateIndex = 0;
+			selectedTimeIndex = 0;
+			selectedLotIndex = 0;
 
 			mainPage();
 
@@ -1566,9 +1894,13 @@ private static void loadSpots() {
 			e1.printStackTrace();
 		}
 
+		viewActions(e);
+
 		paymentActions(e);
 
 		confirmActions(e);
+
+		errorActions(e);
 
 	}
 

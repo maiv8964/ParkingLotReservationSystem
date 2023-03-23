@@ -1,5 +1,4 @@
 package userLogin;
-import java.io.File;
 import java.io.FileWriter;
 import java.util.ArrayList;
 import com.csvreader.CsvReader;
@@ -57,6 +56,8 @@ public class MaintainUser {
 				e.printStackTrace();
 			}
 	}
+	
+	// Test to add user
 	
 //	public static void main(String [] args) throws Exception{
 //		String path = "user.csv";

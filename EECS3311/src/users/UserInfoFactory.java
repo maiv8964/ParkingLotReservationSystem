@@ -1,7 +1,5 @@
 package users;
 
-import manager.SuperManager;
-
 public class UserInfoFactory {
 
 	public UserInfo makeUser(String type, String username, String password) {

@@ -24,7 +24,6 @@ public class SuperManager extends Manager {
     	String username = "manager_" + String.valueOf(System.nanoTime());
     	String password = "password_" + String.valueOf(System.nanoTime());
         Manager newManager = new Manager(username, password);
-        //ParkingSystem.getInstance().addManager(newManager);
         return newManager;
     }
 }

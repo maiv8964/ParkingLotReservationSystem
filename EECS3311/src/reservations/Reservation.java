@@ -1,7 +1,5 @@
 package reservations;
 
-import java.sql.Time;
-
 import parking.ParkingSpace;
 import users.*;
 

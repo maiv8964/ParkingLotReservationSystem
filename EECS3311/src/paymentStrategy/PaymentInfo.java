@@ -17,7 +17,6 @@ public class PaymentInfo {
         this.billingAddress = billingAddress;
         this.billingName = billingName;
         this.securityCode = securityCode;
-        //this.cardBallance = cardBallance;
     }
 	
 	public double getCardBallance() {

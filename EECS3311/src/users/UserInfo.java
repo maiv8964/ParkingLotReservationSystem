@@ -25,11 +25,6 @@ public abstract class UserInfo{
 	
 	public abstract int getParkingRate();
 	
-	//need further implementation
-	public void bookParking() {
-		//communicate with Reservation system !?
-	}
-	
 	public void setValid() {
 		this.isValidated = true;
 	}

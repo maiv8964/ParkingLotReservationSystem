@@ -1,8 +1,6 @@
 package users;
 
 public class Visitor extends UserInfo{
-	
-	
 
 	public Visitor(String username, String password) {
 		super(username, password);

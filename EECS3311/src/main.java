@@ -70,7 +70,6 @@ public class main implements ActionListener {
 	// Main Page
 	private static JButton mainBack;
 	private static JButton bookings;
-	private static JButton manage;
 	private static JPanel mainGeneralPage;
 	private static JPanel mainGeneralManagementPage;
 	private static JPanel topManagementPanel;
@@ -134,6 +133,7 @@ public class main implements ActionListener {
 	private static JTextField securityCodeText;
 	private static JButton pay;
 	private static JLabel paysuccess;
+	private static boolean editbooking = false;
 
 	// Booking Confirmation Page
 	private static JPanel confirmationGeneralPage;
@@ -222,11 +222,13 @@ public class main implements ActionListener {
 		loginGeneralPanel = new JPanel();
 		loginGeneralPanel.setVisible(false);
 		loginGeneralPanel.setLayout(new BoxLayout(loginGeneralPanel, BoxLayout.PAGE_AXIS));
+		loginGeneralPanel.setBackground(Color.gray);
 		Frame.getContentPane().add(loginGeneralPanel);
 
 		loginPanel = new JPanel();
 		loginPanel.setBorder(new EmptyBorder(200, 10, 10, 10));
 		loginPanel.setLayout(new BoxLayout(loginPanel, BoxLayout.PAGE_AXIS));
+		loginPanel.setBackground(Color.gray);
 
 		// Username/Email
 		userlabel = new JLabel("Email");
@@ -403,10 +405,6 @@ public class main implements ActionListener {
 		navManagementPanel = new JPanel(new FlowLayout());
 
 		navManagementPanel.add(Box.createVerticalStrut(10)); // spacer
-
-		manage = new JButton("Validate Users");
-		manage.addActionListener(new main());
-		navManagementPanel.add(manage);
 
 		mainBack = new JButton("Logout");
 		mainBack.addActionListener(new main());
@@ -750,6 +748,7 @@ public class main implements ActionListener {
 
 		paymentGeneralPage = new JPanel();
 		paymentGeneralPage.setVisible(false);
+		paymentGeneralPage.setBackground(Color.gray);
 		paymentGeneralPage.setLayout(new BoxLayout(paymentGeneralPage, BoxLayout.PAGE_AXIS));
 		Frame.getContentPane().add(paymentGeneralPage);
 
@@ -762,7 +761,18 @@ public class main implements ActionListener {
 
 		paymentGeneralPage.add(Box.createVerticalStrut(20)); // spacer
 
-		int cost = currentuser.getParkingRate();
+		int cost;
+		
+		if(editbooking) {
+			
+			cost = rsystem.calculateOutstanding(currentuser.currentReservation, currentuser);
+			
+		}else {
+			
+			cost = currentuser.getParkingRate();
+			
+		}
+		
 		costLabel = new JLabel("You will be charged: $" + cost + "\n");
 		costLabel.setFont(new Font("", Font.PLAIN, 30));
 		costLabel.setForeground(Color.red);
@@ -778,6 +788,7 @@ public class main implements ActionListener {
 		ptypesPanel = new JPanel();
 		ptypesPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
 		ptypesPanel.setBounds(0, 0, 500, 100);
+		ptypesPanel.setBackground(Color.gray);
 		ptypesPanel.setLayout(new BoxLayout(ptypesPanel, BoxLayout.LINE_AXIS));
 
 		// Payment types
@@ -786,10 +797,13 @@ public class main implements ActionListener {
 
 		ptypesPanel.add(debit);
 		ptypesPanel.add(credit);
+		debit.setBackground(Color.gray);
+		credit.setBackground(Color.gray);
 
 		paymentPanel = new JPanel();
 		paymentPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
 		paymentPanel.setBounds(0, 0, 500, 100);
+		paymentPanel.setBackground(Color.gray);
 		paymentPanel.setLayout(new BoxLayout(paymentPanel, BoxLayout.PAGE_AXIS));
 
 		// Cardholder name
@@ -877,11 +891,13 @@ public class main implements ActionListener {
 		confirmationGeneralPage = new JPanel();
 		confirmationGeneralPage.setVisible(false);
 		confirmationGeneralPage.setLayout(new BoxLayout(confirmationGeneralPage, BoxLayout.PAGE_AXIS));
+		confirmationGeneralPage.setBackground(Color.gray);
 		Frame.getContentPane().add(confirmationGeneralPage);
 
 		confirmPanel = new JPanel();
 		confirmPanel.setBorder(new EmptyBorder(100, 10, 10, 10));
 		confirmPanel.setLayout(new BoxLayout(confirmPanel, BoxLayout.PAGE_AXIS));
+		confirmPanel.setBackground(Color.gray);
 
 		// Username/Email
 		confirmLabel = new JLabel("You have successfully booked this Parking Space.");
@@ -905,11 +921,13 @@ public class main implements ActionListener {
 		errorLotPage = new JPanel();
 		errorLotPage.setVisible(false);
 		errorLotPage.setLayout(new BoxLayout(errorLotPage, BoxLayout.PAGE_AXIS));
+		errorLotPage.setBackground(Color.gray);
 		Frame.getContentPane().add(errorLotPage);
 
 		errorPanel = new JPanel();
 		errorPanel.setBorder(new EmptyBorder(100, 10, 10, 10));
 		errorPanel.setLayout(new BoxLayout(errorPanel, BoxLayout.PAGE_AXIS));
+		errorPanel.setBackground(Color.gray);
 
 		// Username/Email
 		errorLabel = new JLabel(errorLot + " Is Not Available This Time");
@@ -1029,6 +1047,7 @@ public class main implements ActionListener {
 		viewGeneralPage = new JPanel();
 		viewGeneralPage.setVisible(false);
 		viewGeneralPage.setLayout(new BoxLayout(viewGeneralPage, BoxLayout.PAGE_AXIS));
+		viewGeneralPage.setBackground(Color.gray);
 		Frame.getContentPane().add(viewGeneralPage);
 
 		viewGeneralPage.add(Box.createVerticalStrut(10)); // spacer
@@ -1045,6 +1064,7 @@ public class main implements ActionListener {
 			optionsPanel = new JPanel(new FlowLayout());
 			optionsPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
 			optionsPanel.setLayout(new BoxLayout(optionsPanel, BoxLayout.LINE_AXIS));
+			optionsPanel.setBackground(Color.gray);
 
 			cancel = new JButton("Cancel Booking");
 			cancel.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -1057,9 +1077,12 @@ public class main implements ActionListener {
 			// Payment types
 			options.add(one);
 			options.add(two);
-
+			one.setBackground(Color.gray);
+			two.setBackground(Color.gray);
+			
 			optionsPanel.add(one);
 			optionsPanel.add(two);
+			
 
 			extend = new JButton("Extend Time");
 			extend.addActionListener(new main());
@@ -1068,6 +1091,7 @@ public class main implements ActionListener {
 			bookingPanel = new JPanel(new FlowLayout());
 			bookingPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
 			bookingPanel.setLayout(new BoxLayout(bookingPanel, BoxLayout.PAGE_AXIS));
+			bookingPanel.setBackground(Color.DARK_GRAY);
 
 			String monthstr = getMonth(currentuser.currentReservation.getMonth());
 			String timestr = getTime(currentuser.currentReservation.getStartTime());
@@ -1076,6 +1100,7 @@ public class main implements ActionListener {
 			JLabel lot = new JLabel(monthstr + ", " + currentuser.currentReservation.getDay() + " at " + timestr);
 
 			lot.setFont(new Font("", Font.PLAIN, 20));
+			lot.setForeground(Color.WHITE);
 			lot.setAlignmentX(Component.CENTER_ALIGNMENT);
 			bookingPanel.add(lot);
 
@@ -1083,10 +1108,24 @@ public class main implements ActionListener {
 					"Location: " + currentuser.parkinglot + ", Parking Space #" + currentuser.parkingspacenum);
 			location.setFont(new Font("", Font.PLAIN, 20));
 			location.setAlignmentX(Component.CENTER_ALIGNMENT);
+			location.setForeground(Color.WHITE);
 			bookingPanel.add(location);
 
-			JLabel duration = new JLabel("Duration: " + currentuser.currentReservation.getDuration() + " Hours");
+			int timelength = currentuser.currentReservation.getDuration();
+			JLabel duration;
+			
+			if(timelength == 1) {
+				
+				duration = new JLabel("Duration: " + currentuser.currentReservation.getDuration() + " Hour");
+				
+			}else {
+				
+				duration = new JLabel("Duration: " + currentuser.currentReservation.getDuration() + " Hours");
+				
+			}
+			
 			duration.setFont(new Font("", Font.PLAIN, 20));
+			duration.setForeground(Color.WHITE);
 			duration.setAlignmentX(Component.CENTER_ALIGNMENT);
 			bookingPanel.add(duration);
 
@@ -1169,6 +1208,7 @@ public class main implements ActionListener {
 		JPanel info = new JPanel();
 		info.setBorder(new EmptyBorder(10, 10, 10, 10));
 		info.setLayout(new BoxLayout(info, BoxLayout.PAGE_AXIS));
+		info.setBackground(Color.gray);
 
 		info.add(Box.createVerticalStrut(10)); // spacer
 		JTextField label = new JTextField("New Manager Account:");
@@ -1225,7 +1265,7 @@ public class main implements ActionListener {
 
 				} else {
 					success.setForeground(Color.red);
-					success.setText("Login incorrect, or account needs to be verified");
+					success.setText("Login incorrect");
 					System.out.println("Failed Login");
 				}
 
@@ -1248,8 +1288,6 @@ public class main implements ActionListener {
 		}
 
 	}
-
-
 	
 	public void registerActions(ActionEvent e) throws Exception {
 
@@ -1319,7 +1357,7 @@ public class main implements ActionListener {
 				}else {
 					
 					regsuccess.setForeground(Color.red);
-					regsuccess.setText("Invalid Email or weak password");
+					regsuccess.setText("Invalid Email, Weak Password, or Denied Validation");
 					System.out.println("Failed Register");
 					
 				}
@@ -1334,13 +1372,6 @@ public class main implements ActionListener {
 	public void mainActions(ActionEvent e) {
 
 		// Admin controls
-
-		// Validate users
-		if (e.getSource() == manage) {
-
-			System.out.println("gong");
-
-		}
 
 		if (e.getSource() == bookings) {
 
@@ -1719,18 +1750,36 @@ public class main implements ActionListener {
 			currentuser.currentReservation = null;
 			currentuser.parkinglot = "";
 			currentuser.parkingspacenum = 0;
+			viewGeneralPage.removeAll();
+			viewGeneralPage.setVisible(false);
+			viewBookingPage();
+			viewGeneralPage.setVisible(true);
 
 		}
 
 		if (e.getSource() == extend) {
 
+			
 			if (one.isSelected()) {
-
-				rsystem.editBooking(currentuser.currentReservation, 2);
-
+				
+				System.out.println("Adding 1 hour to reservation");
+				rsystem.editBooking(currentuser.currentReservation, 1 + currentuser.currentReservation.getDuration());
+				viewGeneralPage.removeAll();
+				viewGeneralPage.setVisible(false);
+				editbooking = true;
+				paymentPage();
+				paymentGeneralPage.setVisible(true);
+				
+				
 			} else if (two.isSelected()) {
 
-				rsystem.editBooking(currentuser.currentReservation, 3);
+				System.out.println("Adding 2 hours to reservation");
+				rsystem.editBooking(currentuser.currentReservation, 2 + currentuser.currentReservation.getDuration());
+				viewGeneralPage.removeAll();
+				viewGeneralPage.setVisible(false);
+				editbooking = true;
+				paymentPage();
+				paymentGeneralPage.setVisible(true);
 
 			}
 
@@ -1802,7 +1851,15 @@ public class main implements ActionListener {
 						currentuser.setPaymentInfo(paymentinfo);
 
 						System.out.println(type);
-						boolean success = context.execute(paymentinfo, this.currentuser.getParkingRate());
+						boolean success;
+						if(editbooking) {
+
+							success = context.execute(paymentinfo, rsystem.calculateOutstanding(currentuser.currentReservation, currentuser));
+							editbooking = false;
+						}else {
+							
+							success = context.execute(paymentinfo, this.currentuser.getParkingRate());
+						}
 
 						if (success) {
 

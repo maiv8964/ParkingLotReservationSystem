@@ -1,5 +1,4 @@
 package reservations;
-import java.sql.Time;
 import java.util.ArrayList;
 import java.util.Map;
 
@@ -68,8 +67,8 @@ public class ReservationSystemFacade {
 		}
 	}
 	
-	private double calculateOutstanding(Reservation reservation,UserInfo userInfo) {
-		return (double)(reservation.getDuration()-1) * userInfo.getParkingRate();
+	public int calculateOutstanding(Reservation reservation,UserInfo userInfo) {
+		return (reservation.getDuration()-1) * userInfo.getParkingRate();
 	}
 
 }
